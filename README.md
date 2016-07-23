@@ -1,2 +1,2 @@
 # open-zombies-code
-The code portion
+The code portion of Open Zombies.
