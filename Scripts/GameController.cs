@@ -19,7 +19,8 @@ public class GameController : MonoBehaviour
 		return gameController;
 	}
 	
-	public GameObject[] spawnPoints;
+	public GameObject[] playerSpawnPoints; //Don't worry about initializing these, the Editor will handle that
+	public GameObject[] zombieSpawnPoints;
 
 	int numPlayers = 1;
 	public List<Player> players;
@@ -35,7 +36,7 @@ public class GameController : MonoBehaviour
 		//Create the players
 		for( int i = 0; i < players.Count; i++)
 		{
-			playerTransforms[i] = players[i].SpawnAt (spawnPoints.GetRandomElement<GameObject> ().transform).transform;
+			playerTransforms[i] = players[i].SpawnAt (playerSpawnPoints.GetRandomElement<GameObject> ().transform).transform;
 		}
 	}
 	
