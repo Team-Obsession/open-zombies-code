@@ -18,10 +18,10 @@ public class Actor : MonoBehaviour
 		this.moveSpeed = moveSpeed;
 	}
 
-	public void SpawnAt( Transform trans)
+	public GameObject SpawnAt( Transform trans)
 	{
 		//TODO: Don't just use instantiate, maybe use some object pooling or whatnot
-		Instantiate(prefab, trans.position, trans.rotation);
+		return (GameObject)Instantiate(prefab, trans.position, trans.rotation);
 	}
 
 	public void Die()

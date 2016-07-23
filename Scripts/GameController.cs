@@ -23,16 +23,19 @@ public class GameController : MonoBehaviour
 
 	int numPlayers = 1;
 	public List<Player> players;
+	public List<Transform> playerTransforms;
+	public List<Zombie> zombies;
+	public List<Transform> zombieTransforms;
 
 
 	void Start ()
 	{
 		players = new List<Player> ();
-		players.Count = numPlayers;
+		players.Capacity = numPlayers;
 		//Create the players
-		foreach (Player player in players) 
+		for( int i = 0; i < players.Count; i++)
 		{
-			player.SpawnAt(spawnPoints.GetRandomElement<Player>().transform);
+			playerTransforms[i] = players[i].SpawnAt (spawnPoints.GetRandomElement<GameObject> ().transform).transform;
 		}
 	}
 	

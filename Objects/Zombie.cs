@@ -11,10 +11,7 @@ public class Zombie : Actor
 
 	void GetTarget()
 	{
-		foreach(Player player in GameController.Instance ().players)
-		{
-			Transform.
-		}
+		target = transform.ClosestOf (GameController.Instance ().playerTransforms).GetComponent<Player>();
 	}
 	
 }
