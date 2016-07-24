@@ -17,7 +17,7 @@ public class Gun : Weapon
 			if (value != bulletsInMag)
 			{
 				bulletsInMag = value;
-				OnBulletCountChange ();
+				OnBulletCountChange();
 			}
 		}
 	}
