@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Weapon : MonoBehaviour 
+public class Weapon : ScriptableObject 
 {
-	public Weapon()
-	{
-	}
+	public GameObject prefab;
+	public WeaponType weaponType;
+	public string weaponName;
+	public float movementScalar, fireRate, reloadSpeed;
+}
+
+public enum WeaponType
+{
+	Gun, Melee
 }
