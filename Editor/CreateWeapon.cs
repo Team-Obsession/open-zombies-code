@@ -2,15 +2,18 @@
 using UnityEditor;
 using System.Collections;
 
-public class CreateWeapon : MonoBehaviour {
+public class CreateWeapon {
+	[MenuItem("Assets/Create/Weapon")]
+	
+	public static void CreateMyWeapon()
+	{
+		Weapon asset = ScriptableObject.CreateInstance<Weapon>();
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+		AssetDatabase.CreateAsset (asset, "NewWeapon.asset");
+		AssetDatabase.SaveAssets();
+
+		EditorUtility.FocusProjectWindow();
+
+		Selection.activeObject = asset;
 	}
 }
