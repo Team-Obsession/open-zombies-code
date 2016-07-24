@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 
+[CreateAssetMenu(fileName = "New Melee", menuName = "Weapon/Melee", order = 2)]
 public class Melee : Weapon
 {
 	private bool canAttack = true;

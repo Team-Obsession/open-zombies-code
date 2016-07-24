@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 
+[CreateAssetMenu(fileName = "New Gun", menuName = "Weapon/Gun", order = 1)]
 public class Gun : Weapon 
 {
 	public int magazineSize = 5, maxExcessAmmo;
