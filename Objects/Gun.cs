@@ -3,10 +3,12 @@ using System.Collections;
 
 public class Gun : Weapon 
 {
-	string name, weaponClass;
+	string weaponName, weaponClass;
 
-	public Gun()
+	public Gun(string weaponName, string weaponClass)
 	{
+		this.weaponName = weaponName;
+		this.weaponClass = weaponClass;
 	}
 
 }
