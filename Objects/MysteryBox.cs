@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
-using System.IO;
+using System.Collections.Generic;
 
 public class MysteryBox : MonoBehaviour 
 {
@@ -9,13 +9,11 @@ public class MysteryBox : MonoBehaviour
 	//TODO: create array or list of the weapons that we want in the mystery box
 
 	Weapon mysteryWeapon;
-	Weapon[] placeholder = new Weapon[20];
-	System.Random rng = new System.Random();
+	Weapon[] allWeapons;
 
-	public Weapon roll()
+	public Weapon Roll()
 	{
-		int randomNumber = rng.Next(0,placeholder.Length);
-		mysteryWeapon = placeholder[randomNumber];
+		mysteryWeapon = allWeapons.GetRandomElement();
 		return mysteryWeapon;
 	}
 }
