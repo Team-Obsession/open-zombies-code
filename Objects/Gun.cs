@@ -5,11 +5,10 @@ using System.Collections;
 [CreateAssetMenu(fileName = "New Gun", menuName = "Weapon/Gun", order = 1)]
 public class Gun : Weapon 
 {
-	public int magazineSize = 5, maxExcessAmmo;
-	private int currentExcessAmmo;
+	public int magazineSize = 5, maxExtraMags = 3;
+	private int excessAmmo;
 
 	private int bulletsInMag;
-
 	public int BulletsInMag
 	{
 		get {	return bulletsInMag;	}
@@ -23,9 +22,20 @@ public class Gun : Weapon
 		}
 	}
 
+	public int MaxAmmo()
+	{
+		return maxExtraMags * (magazineSize + 1);
+	}
+
+	public int CurrentAmmo()
+	{
+		return BulletsInMag + excessAmmo;
+	}
+
 	public Gun()
 	{
 		bulletsInMag = magazineSize;
+		excessAmmo = maxExtraMags * magazineSize;
 	}
 		
 	/// <summary>
@@ -33,17 +43,21 @@ public class Gun : Weapon
 	/// </summary>
 	public void Reload()
 	{
-		if(currentExcessAmmo > 0)
+		if(BulletsInMag == magazineSize)
 		{
-			if(currentExcessAmmo >= magazineSize)
+			return;
+		}
+		if(excessAmmo > 0)
+		{
+			if(excessAmmo >= magazineSize - BulletsInMag)
 			{
+				excessAmmo -= magazineSize - BulletsInMag;
 				BulletsInMag = magazineSize;
-				currentExcessAmmo -= magazineSize;
 			}
 			else
 			{
-				BulletsInMag = currentExcessAmmo;
-				currentExcessAmmo = 0;
+				BulletsInMag = excessAmmo;
+				excessAmmo = 0;
 			}
 		}
 		OnReload();

@@ -29,4 +29,12 @@ public class Melee : Weapon
 		}
 	}
 
+	public void RegisterAttack(Action callbackFunc)
+	{
+		cbAttack += callbackFunc;
+	}
+	public void UnregisterAttack(Action callbackFunc)
+	{
+		cbAttack -= callbackFunc;
+	}
 }
