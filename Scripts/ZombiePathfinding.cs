@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Zombie))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class ZombiePathfinding : MonoBehaviour 
 {
 	public Zombie zombie;
@@ -35,20 +37,22 @@ public class ZombiePathfinding : MonoBehaviour
 
 	void OnCollisionEnter(Collision col)
 	{
-		if(col.gameObject.GetComponent<Player>() != null) //we hit a player
+		Player player = col.gameObject.GetComponent<Player>();
+		if(player != null) //we hit a player
 		{
-			
+			player.TakeDamage (0f);
 		}
 	}
 
 	void OnTargetChange()
 	{
 		stoppingDistance = 1.1f * (zombie.Target.GetComponent<CharacterController>().radius + zombie.GetComponent<CapsuleCollider>().radius);
+		navAgent.stoppingDistance = stoppingDistance;
 	}
 
 	void Update()
 	{
-		navAgent.destination = StoppingPoint ( zombie.Target.transform.position, zombie.transform.position, stoppingDistance);
+		navAgent.destination = zombie.Target.transform.position;
 
 	}
 
