@@ -25,7 +25,7 @@ public class PlayerInput : MonoBehaviour {
 			if(value != playerIndex)
 			{
 				playerIndex = value;
-				//TODO: Callback
+				OnPlayerIndexChange ();
 			}
 		}
 	}
