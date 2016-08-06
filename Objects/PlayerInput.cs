@@ -144,6 +144,16 @@ public class PlayerInput : MonoBehaviour {
 			timeHeldAim = 0f;
 		}
 
+		if(GetButtonDown ("AimAlt"))
+		{
+			OnInputAimAlt (timeHeldAimAlt);
+			timeHeldAimAlt += Time.deltaTime; 
+		}
+		else
+		{
+			timeHeldAimAlt = 0f;
+		}
+
 		if(GetButtonDown ("Shoot"))
 		{
 			OnInputShoot (timeHeldShoot);
@@ -152,6 +162,16 @@ public class PlayerInput : MonoBehaviour {
 		else
 		{
 			timeHeldShoot = 0f;
+		}
+
+		if(GetButtonDown ("ShootAlt"))
+		{
+			OnInputShootAlt (timeHeldShootAlt);
+			timeHeldShootAlt += Time.deltaTime; 
+		}
+		else
+		{
+			timeHeldShootAlt = 0f;
 		}
 	}
 
