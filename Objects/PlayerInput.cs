@@ -295,6 +295,15 @@ public class PlayerInput : MonoBehaviour {
 		cbInputMove -= callbackFunction;
 	}
 
+	public void RegisterInputLook (Action<Vector2> callbackFunction)
+	{
+		cbInputLook += callbackFunction;
+	}
+	public void UnregisterInputLook (Action<Vector2> callbackFunction)
+	{
+		cbInputLook -= callbackFunction;
+	}
+
 	public void RegisterInputJump (Action<float> callbackFuntion)
 	{
 		cbInputJump += callbackFuntion;
