@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 
 
-[RequireComponent(typeof(Player))]
 public class PlayerInput : MonoBehaviour {
 
 	private Player player;
