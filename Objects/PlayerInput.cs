@@ -63,6 +63,8 @@ public class PlayerInput : MonoBehaviour {
 	Vector2 lookVector = Vector2.zero;
 	float timeHeldJump = 0f;
 	float timeHeldStance = 0f;
+	float timeHeldSprint = 0f;
+	float timeHeldWalk = 0f;
 	float timeHeldInteract = 0f;
 	float timeHeldSwitch = 0f;
 	float timeHeldAim = 0f;
@@ -70,21 +72,21 @@ public class PlayerInput : MonoBehaviour {
 	float timeHeldShoot = 0f;
 	float timeHeldShootAlt = 0f;
 
+	void Start()
+	{
+		Player = GetComponent<Player>();
+		if(Player == null)
+		{
+			Debug.LogError ("No Player component on Player " + PlayerIndex + "'s GameObject");
+		}
+	}
+
 	void Update()  //The meat and potatoes
 	{
-		if(	GetAxisRaw ("Horizontal") != 0f	|| GetAxisRaw ("Vertical") != 0f )
-		{
-			moveVector = new Vector2 (	GetAxis ("Horizontal"), GetAxis ("Vertical")	);
-			OnInputMove (moveVector);
-		}
-		else
-		{
-			moveVector = Vector2.zero;
-		}
 
-		if (GetAxisRaw ("MouseLookX") != 0f || GetAxisRaw ("MouseLookY") != 0f)
+		if (GetAxis ("Mouse X") != 0f || GetAxis ("Mouse Y") != 0f)
 		{
-			lookVector = new Vector2 (	GetAxis ("MouseLookX"), GetAxis ("MouseLookY")	);
+			lookVector = new Vector2 (	GetAxis ("Mouse X"), GetAxis ("Mouse Y")	);
 			OnInputLook (lookVector);
 		}
 		else
@@ -92,9 +94,9 @@ public class PlayerInput : MonoBehaviour {
 			lookVector = Vector2.zero;
 		}
 
-		if(	GetButtonDown ("Jump"))
+		if(	GetButton ("Jump"))
 		{
-			OnInputStance (timeHeldJump);
+			OnInputJump (timeHeldJump);
 			timeHeldJump += Time.deltaTime;
 		}
 		else
@@ -103,7 +105,7 @@ public class PlayerInput : MonoBehaviour {
 		}
 
 
-		if(GetButtonDown ("Stance"))
+		if(GetButton ("Stance"))
 		{
 			OnInputStance (timeHeldStance);
 			timeHeldStance += Time.deltaTime; 
@@ -113,7 +115,30 @@ public class PlayerInput : MonoBehaviour {
 			timeHeldStance = 0f;
 		}
 
-		if(GetButtonDown ("Interact"))
+		if(GetButton ("Sprint"))
+		{
+			OnInputSprint (timeHeldSprint);
+			timeHeldWalk = 0f;
+			timeHeldSprint += Time.deltaTime;
+		}
+		else
+		{
+			OnInputWalk (timeHeldWalk);
+			timeHeldSprint = 0f;
+			timeHeldWalk += Time.deltaTime;
+		}
+
+		if(	GetAxis ("Horizontal") != 0f	||  GetAxis ("Vertical") != 0f )
+		{
+			moveVector = new Vector2 (	GetAxis ("Horizontal"), GetAxis ("Vertical")	);
+			OnInputMove (moveVector);
+		}
+		else
+		{
+			moveVector = Vector2.zero;
+		}
+
+		if(GetButton ("Interact"))
 		{
 			OnInputInteract (timeHeldInteract);
 			timeHeldInteract += Time.deltaTime; 
@@ -123,7 +148,7 @@ public class PlayerInput : MonoBehaviour {
 			timeHeldInteract = 0f;
 		}
 
-		if(GetButtonDown ("Switch"))
+		if(GetButton ("Switch"))
 		{
 			OnInputSwitch (timeHeldSwitch);
 			timeHeldSwitch += Time.deltaTime; 
@@ -133,7 +158,7 @@ public class PlayerInput : MonoBehaviour {
 			timeHeldSwitch = 0f;
 		}
 
-		if(GetButtonDown ("Aim"))
+		if(GetButton ("Aim"))
 		{
 			OnInputAim (timeHeldAim);
 			timeHeldAim += Time.deltaTime; 
@@ -143,7 +168,7 @@ public class PlayerInput : MonoBehaviour {
 			timeHeldAim = 0f;
 		}
 
-		if(GetButtonDown ("AimAlt"))
+		if(GetButton ("AimAlt"))
 		{
 			OnInputAimAlt (timeHeldAimAlt);
 			timeHeldAimAlt += Time.deltaTime; 
@@ -153,7 +178,7 @@ public class PlayerInput : MonoBehaviour {
 			timeHeldAimAlt = 0f;
 		}
 
-		if(GetButtonDown ("Shoot"))
+		if(GetButton ("Shoot"))
 		{
 			OnInputShoot (timeHeldShoot);
 			timeHeldShoot += Time.deltaTime; 
@@ -163,7 +188,7 @@ public class PlayerInput : MonoBehaviour {
 			timeHeldShoot = 0f;
 		}
 
-		if(GetButtonDown ("ShootAlt"))
+		if(GetButton ("ShootAlt"))
 		{
 			OnInputShootAlt (timeHeldShootAlt);
 			timeHeldShootAlt += Time.deltaTime; 
@@ -180,6 +205,8 @@ public class PlayerInput : MonoBehaviour {
 	Action<Vector2> cbInputLook;
 	Action<float> cbInputJump;
 	Action<float> cbInputStance;
+	Action<float> cbInputSprint;
+	Action<float> cbInputWalk;
 	Action<float> cbInputInteract;
 	Action<float> cbInputSwitch;
 	Action<float> cbInputAim;
@@ -195,11 +222,11 @@ public class PlayerInput : MonoBehaviour {
 		}
 	}
 
-	void OnInputMove( Vector2 moveVector)
+	void OnInputMove( Vector2 inputVector)
 	{
 		if( cbInputMove != null)
 		{
-			cbInputMove ( moveVector);
+			cbInputMove ( inputVector);
 		}
 	}
 
@@ -224,6 +251,22 @@ public class PlayerInput : MonoBehaviour {
 		if(cbInputStance != null)
 		{
 			cbInputStance( timeHeld);
+		}
+	}
+
+	void OnInputSprint( float timeHeld)
+	{
+		if(cbInputSprint != null)
+		{
+			cbInputSprint( timeHeld);
+		}
+	}
+
+	void OnInputWalk( float timeHeld)
+	{
+		if(cbInputWalk != null)
+		{
+			cbInputWalk( timeHeld);
 		}
 	}
 
@@ -319,6 +362,24 @@ public class PlayerInput : MonoBehaviour {
 	public void UnregisterInputStance (Action<float> callbackFunction)
 	{
 		cbInputStance -= callbackFunction;
+	}
+
+	public void RegisterInputSprint (Action<float> callbackFunction)
+	{
+		cbInputSprint += callbackFunction;
+	}
+	public void UnregisterInputSprint (Action<float> callbackFunction)
+	{
+		cbInputSprint -= callbackFunction;
+	}
+
+	public void RegisterInputWalk (Action<float> callbackFunction)
+	{
+		cbInputWalk += callbackFunction;
+	}
+	public void UnregisterInputWalk (Action<float> callbackFunction)
+	{
+		cbInputWalk -= callbackFunction;
 	}
 
 	public void RegisterInputInteract (Action<float> callbackFuntion)
