@@ -31,9 +31,9 @@ public class GameController : MonoBehaviour
 
 	void Start ()
 	{
-		players = new List<Player> ();
-		players.Capacity = numPlayers;
+		//players.Capacity = numPlayers;
 		//Create the players
+
 		for( int i = 0; i < players.Count; i++)
 		{
 			playerTransforms[i] = players[i].SpawnAt (playerSpawnPoints.GetRandomElement<GameObject> ().transform).transform;
