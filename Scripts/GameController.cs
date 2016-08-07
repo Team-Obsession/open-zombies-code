@@ -40,10 +40,13 @@ public class GameController : MonoBehaviour
 
 	void Awake ()
 	{
+		players = new List<Player> (numPlayers);
 		playerGameObjects = new List<GameObject> (numPlayers);
 		for(int i = 0; i < numPlayers; i++)
 		{
 			GameObject randSpawn = playerSpawnPoints.GetRandomElement<GameObject> ();
+			playerGameObjects.Add( (GameObject) Instantiate (playerPrefab, randSpawn.transform.position, randSpawn.transform.rotation) );
+			players.Add (	playerGameObjects[i].AddComponent<Player>()		);
 			players[i].prefab = playerPrefab;
 		}
 	}
