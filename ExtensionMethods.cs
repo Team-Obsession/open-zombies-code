@@ -25,6 +25,29 @@ public static class ExtensionMethods
 		}
 		return closest;
 	}
+
+	public static Vector2 gradientNormalize2D (this Vector2 input)
+	{	
+		if(input == Vector2.zero)
+		{
+			return Vector2.zero;
+		}
+		float angle = Mathf.Atan(input.y / input.x);
+		float extMag = 0f;
+		float sinAngle = Mathf.Sin(angle);
+		float cosAngle = Mathf.Cos(angle);
+		
+		if( Mathf.Abs(sinAngle) <= Mathf.Abs(cosAngle))
+		{
+			extMag = 1f / Mathf.Abs(cosAngle);
+		}
+		else
+		{
+			extMag = 1f / Mathf.Abs(sinAngle);
+		}
+		Vector2 output = new Vector2(input.x / extMag, input.y / extMag);	
+		return output;
+	}
 	
 }
 
