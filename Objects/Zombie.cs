@@ -23,7 +23,7 @@ public class Zombie : Actor
 
 	public void GetTarget()
 	{
-		target = transform.ClosestOf (GameController.Instance ().playerTransforms).GetComponent<Player>();
+		target = transform.ClosestOf (GameController.Instance ().PlayerGameObjects).GetComponent<Player>();
 	}
 
 	protected Action cbTargetChange;

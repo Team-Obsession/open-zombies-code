@@ -46,7 +46,7 @@ public class ZombiePathfinding : MonoBehaviour
 
 	void OnTargetChange()
 	{
-		stoppingDistance = 1.1f * (zombie.Target.GetComponent<CharacterController>().radius + zombie.GetComponent<CapsuleCollider>().radius);
+		stoppingDistance = 1.1f * (zombie.Target.GetComponent<CapsuleCollider>().radius + zombie.GetComponent<CapsuleCollider>().radius);
 		navAgent.stoppingDistance = stoppingDistance;
 	}
 

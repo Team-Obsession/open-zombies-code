@@ -11,6 +11,11 @@ public static class ExtensionMethods
 
 	public static Transform ClosestOf (this Transform reference, List<Transform> prospects)
 	{
+		if (prospects.Capacity == 0)
+		{
+			Debug.LogError ("Prospects is an uninstantiated list");
+			return null;
+		}
 		Transform closest = prospects[0];
 		float lastSqrDist = float.MaxValue;
 		float thisSqrDist;
@@ -20,6 +25,28 @@ public static class ExtensionMethods
 			if(thisSqrDist < lastSqrDist)
 			{
 				closest = prospects[i];
+			}
+			lastSqrDist = thisSqrDist;
+		}
+		return closest;
+	}
+
+	public static Transform ClosestOf (this Transform reference, List<GameObject> prospects)
+	{
+		if (prospects.Capacity == 0)
+		{
+			Debug.LogError ("Prospects is an uninstantiated list");
+			return null;
+		}
+		Transform closest = prospects[0].transform;
+		float lastSqrDist = float.MaxValue;
+		float thisSqrDist;
+		for(int i = 0; i < prospects.Count; i++)
+		{
+			thisSqrDist =  (prospects[i].transform.position - reference.transform.position).sqrMagnitude;
+			if(thisSqrDist < lastSqrDist)
+			{
+				closest = prospects[i].transform;
 			}
 			lastSqrDist = thisSqrDist;
 		}

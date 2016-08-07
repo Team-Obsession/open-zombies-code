@@ -66,13 +66,10 @@ public class PlayerMotor : MonoBehaviour
 
 	void Start() //initialization
 	{
-		if(player != null)
+		player = GetComponent<Player>();
+		if(player == null)
 		{
-			player = GetComponent<Player>();
-			if(player == null)
-			{
-				Debug.LogError ("No Player on this GameObject");
-			}
+			Debug.LogError ("No Player on this GameObject");
 		}
 
 		if(input != null)
@@ -90,6 +87,7 @@ public class PlayerMotor : MonoBehaviour
 			Debug.LogError ("No Rigidbody on this GameObject");
 		}
 	}
+
 
 	void OnEnable() //To register all of the callbacks
 	{
