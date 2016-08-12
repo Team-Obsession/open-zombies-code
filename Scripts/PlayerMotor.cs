@@ -7,8 +7,8 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMotor : MonoBehaviour 
 {
-	public Player player;
-	public PlayerInput input;
+	private Player player;
+	private PlayerInput input;
 
 	float realMoveSpeed;
 	float realJumpForce;

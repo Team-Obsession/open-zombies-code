@@ -5,6 +5,8 @@ public class PlayerLook : MonoBehaviour
 {
 	public Player player;
 	public PlayerInput input;
+	public bool clampXRotation = true;
+	public float maxXRotation;
 
 
 	void Start()

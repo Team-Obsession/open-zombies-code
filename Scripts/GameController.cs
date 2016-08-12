@@ -24,6 +24,7 @@ public class GameController : MonoBehaviour
 
 	public int numPlayers = 1;
 	public GameObject playerPrefab;
+	public GameObject zombiePrefab;
 
 	private List<Player> players;
 	public List<Player> Players {	get{return players;} protected set {players = value;}	}
