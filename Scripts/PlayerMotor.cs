@@ -72,7 +72,7 @@ public class PlayerMotor : MonoBehaviour
 			Debug.LogError ("No Player on this GameObject");
 		}
 
-		if(input != null)
+		if(input == null)
 		{
 			input = GetComponent<PlayerInput>();
 			if (input == null)
@@ -91,6 +91,14 @@ public class PlayerMotor : MonoBehaviour
 
 	void OnEnable() //To register all of the callbacks
 	{
+		if(input == null)
+		{
+			input = GetComponent<PlayerInput>();
+			if (input == null)
+			{
+				Debug.LogError ("No PlayerInput on this GameObject");
+			}
+		}
 		input.RegisterInputMove (OnInputMove);
 		input.RegisterInputJump (OnInputJump);
 		input.RegisterInputStance (OnInputStance);
