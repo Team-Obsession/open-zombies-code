@@ -7,3 +7,5 @@ Ideally Open Zombies will be able to cater to different playstyles, such as:
   1. The player who wants an interesting progression with lore to explore.
   2. The player who only cares about grinding out to high rounds, likes to train, and wants everything available immediately.
   3. Somewhere in-between.
+
+The non-code assets may be released / linked to later, after a substantial amount has been created.
