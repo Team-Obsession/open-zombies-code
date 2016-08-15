@@ -7,32 +7,48 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerMotor : MonoBehaviour 
 {
-	private Player player;
-	private PlayerInput input;
 
 	float realMoveSpeed;
 	float realJumpForce;
+	float realAirControlScalar = 1f;
 	float realSprintScalar;
+	float realControlDamp;
 
+	private Player player;
+	private PlayerInput input;
+	private Collider myCollider;
+
+	private int notPlayerMask = ~ (1 << 8);
 	private Rigidbody rb;
 	private Vector3 globalMoveDirection = Vector3.zero;
 	private bool grounded;
 
 
+	bool CanJump
+	{
+		get
+		{
+			return grounded;
+		}
+	}
 
 	void OnInputMove(Vector2 inputVector)
 	{
+		realControlDamp = CanJump ? player.groundControlDamp : player.airControlDamp;
+		realAirControlScalar = CanJump ? 1f : player.airControlScalar;
 		inputVector = inputVector.gradientNormalize2D();
 		globalMoveDirection = transform.TransformDirection (	new Vector3( inputVector.x, 0f, inputVector.y)	);
-		globalMoveDirection *= player.baseMoveSpeed * realSprintScalar;
-		rb.velocity = new Vector3	(	Mathf.Lerp(	rb.velocity.x, globalMoveDirection.x, player.groundControlDamp * Time.deltaTime),
+		globalMoveDirection *= player.baseMoveSpeed * realSprintScalar * realAirControlScalar;
+		rb.velocity = new Vector3	(	Mathf.Lerp(	rb.velocity.x, globalMoveDirection.x, realControlDamp * Time.deltaTime),
 									 	rb.velocity.y,
-									 	Mathf.Lerp( rb.velocity.z, globalMoveDirection.z, player.groundControlDamp * Time.deltaTime)
+									 	Mathf.Lerp( rb.velocity.z, globalMoveDirection.z, realControlDamp * Time.deltaTime)
 									);
 	}
 
 	void OnInputJump ( float timeHeld ) //TODO: Implement grounded
 	{
+
+		if(!CanJump) {		return;		}
 		if (timeHeld == 0f)
 		{
 			rb.AddForce (0f, player.baseJumpForce, 0f, ForceMode.VelocityChange);
@@ -51,7 +67,7 @@ public class PlayerMotor : MonoBehaviour
 
 	void OnInputSprint (float timeHeld)
 	{
-		realSprintScalar = player.sprintScalar;
+		realSprintScalar = Mathf.Lerp (1, player.sprintScalar, Mathf.Clamp(timeHeld * 3f, 0, 1));
 	}
 
 	void OnInputWalk (float timeHeld)
@@ -62,6 +78,26 @@ public class PlayerMotor : MonoBehaviour
 	void OnInputSwitch (float timeHeld)
 	{
 		
+	}
+
+	//private RaycastHit groundedHit;
+	bool GroundedRayCast()
+	{
+		return Physics.Raycast (transform.position, -Vector3.up, 0.05f);
+	}
+
+	bool GroundedCapsuleCast()
+	{
+		return Physics.CheckCapsule(	myCollider.bounds.center,
+										new Vector3	(myCollider.bounds.center.x, myCollider.bounds.min.y - 0.1f, myCollider.bounds.center.z),
+										((CapsuleCollider) myCollider).radius,
+										notPlayerMask
+									);
+	}
+
+	void FixedUpdate()
+	{
+		grounded = GroundedCapsuleCast ();
 	}
 
 	void Start() //initialization
@@ -86,8 +122,9 @@ public class PlayerMotor : MonoBehaviour
 		{
 			Debug.LogError ("No Rigidbody on this GameObject");
 		}
-	}
 
+		myCollider = GetComponent<Collider>();
+	}
 
 	void OnEnable() //To register all of the callbacks
 	{
