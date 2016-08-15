@@ -1,5 +1,5 @@
 # open-zombies-code
-The code portion of Open Zombies.
+The code portion of Open Zombies, in C# for the Unity3D game engine.
 
 The purpose of Open Zombies is to create a round-based zombie survival game with full local, Internet (and maybe LAN) multiplayer support on PC taken in a slightly different development direction than the popular zombies mode. 
 
