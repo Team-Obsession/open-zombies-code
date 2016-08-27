@@ -61,16 +61,39 @@ public class PlayerInput : MonoBehaviour {
 
 	Vector2 moveVector = Vector2.zero;
 	Vector2 lookVector = Vector2.zero;
+
 	float timeHeldJump = 0f;
+	public float TimeHeldJump { get { return timeHeldJump; }}
+
+	float timeHeldNotJump = 0f;
+	public float TimeHeldNotJump { get { return timeHeldNotJump; }}
+
 	float timeHeldStance = 0f;
+	public float TimeHeldStance { get { return timeHeldStance; }}
+
 	float timeHeldSprint = 0f;
+	public float TimeHeldSprint { get { return timeHeldSprint; }}
+
 	float timeHeldWalk = 0f;
+	public float TimeHeldWalk { get { return timeHeldWalk; }}
+
 	float timeHeldInteract = 0f;
+	public float TimeHeldInteract { get { return timeHeldInteract; }}
+
 	float timeHeldSwitch = 0f;
+	public float TimeHeldSwitch { get { return timeHeldSwitch; }}
+
 	float timeHeldAim = 0f;
+	public float TimeHeldAim { get {return timeHeldAim; }}
+
 	float timeHeldAimAlt = 0f;
+	public float TimeHeldAimAlt { get { return timeHeldAimAlt; }}
+
 	float timeHeldShoot = 0f;
+	public float TimeHeldShoot { get { return timeHeldShoot; }}
+
 	float timeHeldShootAlt = 0f;
+	public float TimeHeldShootAlt { get { return timeHeldShootAlt; }}
 
 	void Start()
 	{
@@ -84,6 +107,16 @@ public class PlayerInput : MonoBehaviour {
 	void Update()  //The meat and potatoes
 	{
 
+		if(	GetAxis ("Horizontal") != 0f	||  GetAxis ("Vertical") != 0f )
+		{
+			moveVector = new Vector2 (	GetAxis ("Horizontal"), GetAxis ("Vertical")	);
+			OnInputMove (moveVector);
+		}
+		else
+		{
+			moveVector = Vector2.zero;
+		}
+
 		if (GetAxis ("Mouse X") != 0f || GetAxis ("Mouse Y") != 0f)
 		{
 			lookVector = new Vector2 (	GetAxis ("Mouse X"), GetAxis ("Mouse Y")	);
@@ -96,18 +129,21 @@ public class PlayerInput : MonoBehaviour {
 
 		if(	GetButton ("Jump"))
 		{
-			OnInputJump (timeHeldJump);
+			CallbackTimeHeld (cbInputJump, timeHeldJump);
 			timeHeldJump += Time.deltaTime;
+			timeHeldNotJump = 0f;
 		}
 		else
 		{
+			CallbackTimeHeld (cbInputNotJump, timeHeldNotJump);
 			timeHeldJump = 0f;
+			timeHeldNotJump += Time.deltaTime;
 		}
 
 
 		if(GetButton ("Stance"))
 		{
-			OnInputStance (timeHeldStance);
+			CallbackTimeHeld (cbInputStance, timeHeldStance);
 			timeHeldStance += Time.deltaTime; 
 		}
 		else
@@ -117,30 +153,21 @@ public class PlayerInput : MonoBehaviour {
 
 		if(GetButton ("Sprint"))
 		{
-			OnInputSprint (timeHeldSprint);
+			CallbackTimeHeld (cbInputSprint, timeHeldSprint);
 			timeHeldWalk = 0f;
 			timeHeldSprint += Time.deltaTime;
 		}
 		else
 		{
-			OnInputWalk (timeHeldWalk);
+			CallbackTimeHeld (cbInputWalk, timeHeldWalk);
 			timeHeldSprint = 0f;
 			timeHeldWalk += Time.deltaTime;
 		}
 
-		if(	GetAxis ("Horizontal") != 0f	||  GetAxis ("Vertical") != 0f )
-		{
-			moveVector = new Vector2 (	GetAxis ("Horizontal"), GetAxis ("Vertical")	);
-			OnInputMove (moveVector);
-		}
-		else
-		{
-			moveVector = Vector2.zero;
-		}
 
 		if(GetButton ("Interact"))
 		{
-			OnInputInteract (timeHeldInteract);
+			CallbackTimeHeld (cbInputInteract, timeHeldInteract);
 			timeHeldInteract += Time.deltaTime; 
 		}
 		else
@@ -150,7 +177,7 @@ public class PlayerInput : MonoBehaviour {
 
 		if(GetButton ("Switch"))
 		{
-			OnInputSwitch (timeHeldSwitch);
+			CallbackTimeHeld (cbInputSwitch, timeHeldSwitch);
 			timeHeldSwitch += Time.deltaTime; 
 		}
 		else
@@ -160,7 +187,7 @@ public class PlayerInput : MonoBehaviour {
 
 		if(GetButton ("Aim"))
 		{
-			OnInputAim (timeHeldAim);
+			CallbackTimeHeld (cbInputAim, timeHeldAim);
 			timeHeldAim += Time.deltaTime; 
 		}
 		else
@@ -170,7 +197,7 @@ public class PlayerInput : MonoBehaviour {
 
 		if(GetButton ("AimAlt"))
 		{
-			OnInputAimAlt (timeHeldAimAlt);
+			CallbackTimeHeld (cbInputAimAlt, timeHeldAimAlt);
 			timeHeldAimAlt += Time.deltaTime; 
 		}
 		else
@@ -180,7 +207,7 @@ public class PlayerInput : MonoBehaviour {
 
 		if(GetButton ("Shoot"))
 		{
-			OnInputShoot (timeHeldShoot);
+			CallbackTimeHeld (cbInputShoot, timeHeldShoot);
 			timeHeldShoot += Time.deltaTime; 
 		}
 		else
@@ -190,7 +217,7 @@ public class PlayerInput : MonoBehaviour {
 
 		if(GetButton ("ShootAlt"))
 		{
-			OnInputShootAlt (timeHeldShootAlt);
+			CallbackTimeHeld (cbInputShootAlt, timeHeldShootAlt);
 			timeHeldShootAlt += Time.deltaTime; 
 		}
 		else
@@ -204,6 +231,7 @@ public class PlayerInput : MonoBehaviour {
 	Action<Vector2> cbInputMove;
 	Action<Vector2> cbInputLook;
 	Action<float> cbInputJump;
+	Action<float> cbInputNotJump;
 	Action<float> cbInputStance;
 	Action<float> cbInputSprint;
 	Action<float> cbInputWalk;
@@ -222,7 +250,7 @@ public class PlayerInput : MonoBehaviour {
 		}
 	}
 
-	void OnInputMove( Vector2 inputVector)
+	void OnInputMove (Vector2 inputVector)
 	{
 		if( cbInputMove != null)
 		{
@@ -230,7 +258,7 @@ public class PlayerInput : MonoBehaviour {
 		}
 	}
 
-	void OnInputLook( Vector2 lookVector)
+	void OnInputLook (Vector2 lookVector)
 	{
 		if(cbInputLook != null)
 		{
@@ -238,83 +266,11 @@ public class PlayerInput : MonoBehaviour {
 		}
 	}
 
-	void OnInputJump( float timeHeld)
+	void CallbackTimeHeld (Action<float> callback, float timeHeld)
 	{
-		if(cbInputJump != null)
+		if(callback != null)
 		{
-			cbInputJump( timeHeld);
-		}
-	}
-
-	void OnInputStance( float timeHeld)
-	{
-		if(cbInputStance != null)
-		{
-			cbInputStance( timeHeld);
-		}
-	}
-
-	void OnInputSprint( float timeHeld)
-	{
-		if(cbInputSprint != null)
-		{
-			cbInputSprint( timeHeld);
-		}
-	}
-
-	void OnInputWalk( float timeHeld)
-	{
-		if(cbInputWalk != null)
-		{
-			cbInputWalk( timeHeld);
-		}
-	}
-
-	void OnInputInteract ( float timeHeld)
-	{
-		if(cbInputInteract  != null)
-		{
-			cbInputInteract (timeHeld);
-		}
-	}
-
-	void OnInputSwitch ( float timeHeld)
-	{
-		if(cbInputSwitch  != null)
-		{
-			cbInputSwitch (timeHeld);
-		}
-	}
-
-	void OnInputAim ( float timeHeld)
-	{
-		if(cbInputAim != null)
-		{
-			cbInputAim ( timeHeld);
-		}
-	}
-
-	void OnInputAimAlt ( float timeHeld)
-	{
-		if(cbInputAimAlt != null)
-		{
-			cbInputAimAlt ( timeHeld);
-		}
-	}
-
-	void OnInputShoot ( float timeHeld)
-	{
-		if(cbInputShoot  != null)
-		{
-			cbInputShoot (timeHeld);
-		}
-	}
-
-	void OnInputShootAlt ( float timeHeld)
-	{
-		if(cbInputShootAlt  != null)
-		{
-			cbInputShootAlt (timeHeld);
+			callback(timeHeld);
 		}
 	}
 
@@ -353,6 +309,15 @@ public class PlayerInput : MonoBehaviour {
 	public void UnregisterInputJump (Action<float> callbackFunction)
 	{
 		cbInputJump -= callbackFunction;
+	}
+
+	public void RegisterInputNotJump (Action<float> callbackFunction)
+	{
+		cbInputNotJump += callbackFunction;
+	}
+	public void UnregisterInputNotJump (Action<float> callbackFunction)
+	{
+		cbInputNotJump -= callbackFunction;
 	}
 
 	public void RegisterInputStance (Action<float> callbackFuntion)

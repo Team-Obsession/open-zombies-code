@@ -48,7 +48,7 @@ public class PlayerMotor : MonoBehaviour
 	void OnInputJump ( float timeHeld ) //TODO: Implement grounded
 	{
 
-		if(!CanJump) {		return;		}
+		if(!CanJump || input.TimeHeldNotJump <= 0.05f) {	return;		}
 		if (timeHeld == 0f)
 		{
 			rb.AddForce (0f, player.baseJumpForce, 0f, ForceMode.VelocityChange);
@@ -83,13 +83,13 @@ public class PlayerMotor : MonoBehaviour
 	//private RaycastHit groundedHit;
 	bool GroundedRayCast()
 	{
-		return Physics.Raycast (transform.position, -Vector3.up, 0.05f);
+		return Physics.Raycast (transform.position, -Vector3.up, 0.01f);
 	}
 
 	bool GroundedCapsuleCast()
 	{
 		return Physics.CheckCapsule(	myCollider.bounds.center,
-										new Vector3	(myCollider.bounds.center.x, myCollider.bounds.min.y - 0.1f, myCollider.bounds.center.z),
+										new Vector3	(myCollider.bounds.center.x, myCollider.bounds.min.y - 0.01f, myCollider.bounds.center.z),
 										((CapsuleCollider) myCollider).radius,
 										notPlayerMask
 									);
