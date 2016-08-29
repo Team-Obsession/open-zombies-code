@@ -59,7 +59,7 @@ public class Actor : MonoBehaviour
 			Health -= amount;
 		}
 	}
-	public void TakeDamage (float amount, Actor sender, out ActorHitInfo hitInfo)
+	public void TakeDamage (float amount, Actor sender, ref ActorHitInfo hitInfo)
 	{
 		hitInfo.hitActor = this;
 		hitInfo.didDamage = true;
