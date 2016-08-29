@@ -22,21 +22,33 @@ public class GameController : MonoBehaviour
 	public GameObject[] playerSpawnPoints; //Don't worry about initializing these, the Editor will handle that
 	public GameObject[] zombieSpawnPoints;
 
-	int numPlayers = 1;
-	public List<Player> players;
-	public List<Transform> playerTransforms;
-	public List<Zombie> zombies;
-	public List<Transform> zombieTransforms;
+	public int numPlayers = 1;
+	public GameObject playerPrefab;
+	public GameObject zombiePrefab;
+
+	private List<Player> players;
+	public List<Player> Players {	get{return players;} protected set {players = value;}	}
+
+	private List<GameObject> playerGameObjects;
+	public List<GameObject> PlayerGameObjects {		get {return playerGameObjects;} protected set {playerGameObjects = value;}	}
+
+	private List<Zombie> zombies;
+	public List<Zombie> Zombies {	get {return zombies;} protected set {zombies = value;}	}
+
+	private List<Transform> zombieTransforms;
+	public List<Transform> ZombieTransforms {	get{return zombieTransforms;} protected set {zombieTransforms = value;}	}
 
 
-	void Start ()
+	void Awake ()
 	{
-		players = new List<Player> ();
-		players.Capacity = numPlayers;
-		//Create the players
-		for( int i = 0; i < players.Count; i++)
+		players = new List<Player> (numPlayers);
+		playerGameObjects = new List<GameObject> (numPlayers);
+		for(int i = 0; i < numPlayers; i++)
 		{
-			playerTransforms[i] = players[i].SpawnAt (playerSpawnPoints.GetRandomElement<GameObject> ().transform).transform;
+			GameObject randSpawn = playerSpawnPoints.GetRandomElement<GameObject> ();
+			playerGameObjects.Add( (GameObject) Instantiate (playerPrefab, randSpawn.transform.position, randSpawn.transform.rotation) );
+			players.Add (	playerGameObjects[i].AddComponent<Player>()		);
+			players[i].prefab = playerPrefab;
 		}
 	}
 	
