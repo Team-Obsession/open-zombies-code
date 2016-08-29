@@ -38,7 +38,6 @@ public class GunInstance : WeaponInstance
 			hitActor.TakeDamage (gun.damage, player);
 			Debug.Log("Shot hit " + hitActor.name);
 		}
-		Debug.Log ("Shoot"); 
 	}
 
 

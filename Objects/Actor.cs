@@ -59,6 +59,16 @@ public class Actor : MonoBehaviour
 			Health -= amount;
 		}
 	}
+	public void TakeDamage (float amount, Actor sender, out ActorHitInfo hitInfo)
+	{
+		hitInfo.hitActor = this;
+		hitInfo.didDamage = true;
+		hitInfo.didDie = Health - amount > 0;
+		if(amount != 0f)
+		{
+			Health -= amount;
+		}
+	}
 
 	public void ChangeMoveSpeed (float newSpeed)
 	{
