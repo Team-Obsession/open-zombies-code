@@ -40,13 +40,13 @@ public class ZombiePathfinding : MonoBehaviour
 		Player player = col.gameObject.GetComponent<Player>();
 		if(player != null) //we hit a player
 		{
-			player.TakeDamage (0f);
+			player.TakeDamage (0f, zombie);
 		}
 	}
 
 	void OnTargetChange()
 	{
-		stoppingDistance = 1.1f * (zombie.Target.GetComponent<CharacterController>().radius + zombie.GetComponent<CapsuleCollider>().radius);
+		stoppingDistance = 1.1f * (zombie.Target.GetComponent<CapsuleCollider>().radius + zombie.GetComponent<CapsuleCollider>().radius);
 		navAgent.stoppingDistance = stoppingDistance;
 	}
 

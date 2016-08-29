@@ -52,7 +52,7 @@ public class Actor : MonoBehaviour
 		return (GameObject)Instantiate(prefab, trans.position, trans.rotation);
 	}
 
-	public void TakeDamage (float amount)
+	public void TakeDamage (float amount, Actor sender)
 	{
 		if(amount != 0f)
 		{
@@ -91,6 +91,7 @@ public class Actor : MonoBehaviour
 		{
 			cbDie();
 		}
+		Debug.Log (gameObject.name + " has died");
 		//TODO: Implement a death handler script where the actor could play an animation or whatever before being destroyed.
 	}
 

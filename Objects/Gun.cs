@@ -84,12 +84,22 @@ public class Gun : Weapon
 				bulletsShot = numBullets - BulletsInMag;
 			}
 		}
+		OnShoot ();
 		return bulletsShot;
 	}
 
+	protected Action cbShoot;
 	protected Action cbBulletCountChange;
 	protected Action cbMagazineEmpty; 
 	protected Action cbReload;
+
+	private void OnShoot()
+	{
+		if(cbShoot != null)
+		{
+			cbShoot();
+		}
+	}
 
 	private void OnBulletCountChange()
 	{
@@ -114,6 +124,15 @@ public class Gun : Weapon
 		{
 			cbReload();
 		}
+	}
+
+	public void RegisterShoot(Action callbackFunc)
+	{
+		cbShoot += callbackFunc;
+	}
+	public void UnregisterShoot(Action callbackFunc)
+	{
+		cbShoot -= callbackFunc;
 	}
 
 	public void RegisterBulletCountChange(Action callbackFunc)
