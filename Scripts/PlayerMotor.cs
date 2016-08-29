@@ -45,7 +45,7 @@ public class PlayerMotor : MonoBehaviour
 									);
 	}
 
-	void OnInputJump ( float timeHeld ) //TODO: Implement grounded
+	void OnInputJump ( float timeHeld )
 	{
 
 		if(!CanJump || input.TimeHeldNotJump <= 0.05f) {	return;		}
@@ -62,7 +62,7 @@ public class PlayerMotor : MonoBehaviour
 
 	void OnInputStance (float timeHeld)
 	{
-		
+		//TODO: Implement crouching and maybe proning
 	}
 
 	void OnInputSprint (float timeHeld)
@@ -77,10 +77,9 @@ public class PlayerMotor : MonoBehaviour
 
 	void OnInputSwitch (float timeHeld)
 	{
-		
+		//This is just for potentially limiting the player's movement speed when they're switching weapons
 	}
 
-	//private RaycastHit groundedHit;
 	bool GroundedRayCast()
 	{
 		return Physics.Raycast (transform.position, -Vector3.up, 0.01f);
