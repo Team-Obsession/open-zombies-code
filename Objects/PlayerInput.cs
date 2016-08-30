@@ -5,8 +5,8 @@ using System.Collections;
 
 public class PlayerInput : MonoBehaviour {
 
-	private Player player;
-	public Player Player
+	private LocalPlayer player;
+	public LocalPlayer Player
 	{
 		get { return player;	}
 		protected set
@@ -97,11 +97,12 @@ public class PlayerInput : MonoBehaviour {
 
 	void Start()
 	{
-		Player = GetComponent<Player>();
-		if(Player == null)
+
+		if(Player == null && ((Player = GetComponent<LocalPlayer>()) == null))
 		{
 			Debug.LogError ("No Player component on Player " + PlayerIndex + "'s GameObject");
 		}
+		PlayerIndex = player.playerIndex;
 	}
 
 	void Update()  //The meat and potatoes

@@ -11,7 +11,7 @@ public class Player : Actor
 	public float airControlScalar = 0.5f;
 	public float groundControlDamp = 40f; //Higher values yield more responsive movement
 	public float airControlDamp = 10f;
-	
+
 }
 
 

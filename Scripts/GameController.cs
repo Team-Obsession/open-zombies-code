@@ -22,12 +22,13 @@ public class GameController : MonoBehaviour
 	public GameObject[] playerSpawnPoints; //Don't worry about initializing these, the Editor will handle that
 	public GameObject[] zombieSpawnPoints;
 
-	public int numPlayers = 1;
+	public int numPlayers = 2;
+	public int numLocalPlayers = 2;
 	public GameObject playerPrefab;
 	public GameObject zombiePrefab;
 
-	private List<Player> players;
-	public List<Player> Players {	get{return players;} protected set {players = value;}	}
+	private List<LocalPlayer> localPlayers;
+	public List<LocalPlayer> LocalPlayers {	get{return localPlayers;} protected set {localPlayers = value;}	}
 
 	private List<GameObject> playerGameObjects;
 	public List<GameObject> PlayerGameObjects {		get {return playerGameObjects;} protected set {playerGameObjects = value;}	}
@@ -41,14 +42,16 @@ public class GameController : MonoBehaviour
 
 	void Awake ()
 	{
-		players = new List<Player> (numPlayers);
+		localPlayers = new List<LocalPlayer> (numPlayers);
 		playerGameObjects = new List<GameObject> (numPlayers);
-		for(int i = 0; i < numPlayers; i++)
+		for(int i = 0; i < numLocalPlayers; i++)
 		{
 			GameObject randSpawn = playerSpawnPoints.GetRandomElement<GameObject> ();
 			playerGameObjects.Add( (GameObject) Instantiate (playerPrefab, randSpawn.transform.position, randSpawn.transform.rotation) );
-			players.Add (	playerGameObjects[i].AddComponent<Player>()		);
-			players[i].prefab = playerPrefab;
+			localPlayers.Add (	playerGameObjects[i].AddComponent<LocalPlayer>()		);
+			localPlayers[i].prefab = playerPrefab;
+			localPlayers[i].playerIndex = i + 1;
+			localPlayers[i].hudHandler = localPlayers[i].gameObject.AddComponent<PlayerHUDHandler>();
 		}
 	}
 	
