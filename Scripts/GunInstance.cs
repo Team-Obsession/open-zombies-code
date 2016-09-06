@@ -5,7 +5,7 @@ public class GunInstance : WeaponInstance
 {
 	public GameObject shootPoint;
 	public GameObject hitPrefab;
-	public Animation animation;
+	public Animation anim;
 	public Player player;
 	public PlayerWeaponHandler weapHandler;
 	public Gun gun;
@@ -44,18 +44,20 @@ public class GunInstance : WeaponInstance
 				hitActor.TakeDamage (gun.damage, player);
 			}
 		}
-		animation.Stop ();
-		animation.Play ();
+		anim.Stop ();
+		anim.Play ();
 	}
 
 
 	void OnEnable()
 	{
-		if((input = weapHandler.GetComponent<PlayerInput>()) == null)
+		//TODO: Placeholder, implement procedural gun adding
+		input = weapHandler.input;
+		if(input == null && ((input = player.GetComponent<PlayerInput>()) == null))
 		{
 			Debug.LogError (gameObject.name + " couldn't find an input from its player");
 		}
-		if(animation == null && ((animation = GetComponent<Animation>()) == null))
+		if(anim == null && ((anim = GetComponent<Animation>()) == null))
 		{
 			Debug.LogError ("No Animation Component on " + gameObject.name);
 		}

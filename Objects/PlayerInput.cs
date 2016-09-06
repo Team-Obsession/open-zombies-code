@@ -95,6 +95,21 @@ public class PlayerInput : MonoBehaviour {
 	float timeHeldShootAlt = 0f;
 	public float TimeHeldShootAlt { get { return timeHeldShootAlt; }}
 
+	bool inputLocked = false;
+	public bool LockState
+	{
+		get	{	return inputLocked;	}
+		set
+		{
+			if (value != inputLocked)
+			{
+				inputLocked = value;
+				OnInputLocked();
+			}
+		}
+	}
+
+
 	void Start()
 	{
 
@@ -107,6 +122,10 @@ public class PlayerInput : MonoBehaviour {
 
 	void Update()  //The meat and potatoes
 	{
+		if (GetButtonDown ("Pause"))
+		{
+			OnInputPause ();
+		}
 
 		if(	GetAxis ("Horizontal") != 0f	||  GetAxis ("Vertical") != 0f )
 		{
@@ -228,7 +247,8 @@ public class PlayerInput : MonoBehaviour {
 	}
 
 	//Callbacks
-	Action<int> cbPlayerIndexChange;
+	Action cbInputPause;
+	Action<bool> cbInputLocked;
 	Action<Vector2> cbInputMove;
 	Action<Vector2> cbInputLook;
 	Action<float> cbInputJump;
@@ -243,11 +263,19 @@ public class PlayerInput : MonoBehaviour {
 	Action<float> cbInputShoot;
 	Action<float> cbInputShootAlt;
 
-	void OnPlayerIndexChange()
+	void OnInputPause()
 	{
-		if( cbPlayerIndexChange != null)
+		if (cbInputPause != null)
 		{
-			cbPlayerIndexChange (playerIndex);
+			cbInputPause();
+		}
+	}
+
+	void OnInputLocked()
+	{
+		if (cbInputLocked != null)
+		{
+			cbInputLocked (LockState);
 		}
 	}
 
@@ -276,13 +304,22 @@ public class PlayerInput : MonoBehaviour {
 	}
 
 
-	public void RegisterPlayerIndexChange(Action<int> callbackFunction)
+	public void RegisterInputPause(Action callbackFunc)
 	{
-		cbPlayerIndexChange += callbackFunction;
+		cbInputPause += callbackFunc;
 	}
-	public void UnregisterPlayerIndexChange (Action<int> callbackFunction)
+	public void UnregisterInputPause (Action callbackFunc)
 	{
-		cbPlayerIndexChange -= callbackFunction;
+		cbInputPause -= callbackFunc;
+	}
+
+	public void RegisterInputLocked (Action<bool> callbackFunc)
+	{
+		cbInputLocked += callbackFunc;
+	}
+	public void UnregisterInputLocked (Action<bool> callbackFunc)
+	{
+		cbInputLocked -= callbackFunc;
 	}
 
 	public void RegisterInputMove (Action<Vector2> callbackFunction)

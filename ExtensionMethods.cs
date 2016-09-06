@@ -53,6 +53,16 @@ public static class ExtensionMethods
 		return closest;
 	}
 
+	public static void SetLayer (this Transform trans, int layer)
+	{
+		trans.gameObject.layer = layer;
+		foreach(Transform child in trans)
+		{
+			child.SetLayer(layer);
+		}
+			
+	}
+
 	public static Vector2 gradientNormalize2D (this Vector2 input)
 	{	
 		if(input == Vector2.zero)
