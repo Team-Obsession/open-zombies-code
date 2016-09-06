@@ -1,19 +1,51 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class Zombie : Actor 
 {
 
-	Player target;
-
-
-
-
-	void GetTarget()
+	private Player target;
+	public Player Target
 	{
-		target = transform.ClosestOf (GameController.Instance ().playerTransforms).GetComponent<Player>();
+		get {	return target;	}
+		protected set
+		{
+			if(value != target)
+			{
+				target = value;
+				OnTargetChange ();
+			}
+		}
 	}
-	
+
+
+
+	public void GetTarget()
+	{
+		target = transform.ClosestOf (GameController.Instance ().PlayerGameObjects).GetComponent<Player>();
+	}
+
+	protected Action cbTargetChange;
+
+	private void OnTargetChange()
+	{
+		if(cbTargetChange != null)
+		{
+			cbTargetChange ();
+		}
+	}
+
+	public void RegisterTargetChange(Action callbackFunc)
+	{
+		cbTargetChange += callbackFunc;
+	}
+
+	public void UnregisterTargetChange(Action callbackFunc)
+	{
+		cbTargetChange -= callbackFunc;
+	}
+
 }
 
 
