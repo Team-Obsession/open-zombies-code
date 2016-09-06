@@ -24,7 +24,6 @@ public class PlayerInput : MonoBehaviour {
 			if(value != playerIndex)
 			{
 				playerIndex = value;
-				OnPlayerIndexChange ();
 			}
 		}
 	}
