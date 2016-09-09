@@ -45,7 +45,7 @@ public class HUDHandler : MonoBehaviour
 
 	}
 
-	void OnEnable ()
+	void Awake ()
 	{
 		playerHUDs = new Dictionary <Player, HUD> ();
 		playerHUDHandlers = new Dictionary <Player, PlayerHUDHandler> ();

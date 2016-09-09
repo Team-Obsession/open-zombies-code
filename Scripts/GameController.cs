@@ -51,7 +51,7 @@ public class GameController : MonoBehaviour
 	public List<Transform> ZombieTransforms {	get {return zombieTransforms;} protected set {zombieTransforms = value;}	}
 
 
-	void OnEnable ()
+	void Awake ()
 	{
 		localPlayers = new List<LocalPlayer> (numPlayers);
 		playerGameObjects = new List<GameObject> (numPlayers);
