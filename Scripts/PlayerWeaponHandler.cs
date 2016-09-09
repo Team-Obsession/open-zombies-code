@@ -6,8 +6,8 @@ public class PlayerWeaponHandler : MonoBehaviour
 {
 	public PlayerInput input;
 	public List<WeaponInstance> weapons;
+	public LocalPlayer player;
 
-	Player player;
 	WeaponInstance currentWeapon; //TODO: add dual-wield functionality
 
 	void OnEnable()

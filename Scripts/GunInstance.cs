@@ -6,12 +6,27 @@ public class GunInstance : WeaponInstance
 	public GameObject shootPoint;
 	public GameObject hitPrefab;
 	public Animation anim;
-	public Player player;
+	public LocalPlayer player;
 	public PlayerWeaponHandler weapHandler;
 	public Gun gun;
 
 	PlayerInput input;
 	float timeKeeper;
+
+	private bool paused = false;
+
+	void OnInputPause()
+	{
+		paused = !paused;
+		if (paused)
+		{
+			input.UnregisterInputShoot (OnInputShoot);
+		}
+		else
+		{
+			input.RegisterInputShoot (OnInputShoot);
+		}
+	}
 
 	void OnInputShoot (float timeHeld)
 	{
@@ -33,7 +48,7 @@ public class GunInstance : WeaponInstance
 	void Shoot ()
 	{
 		RaycastHit hit;
-		if (Physics.Raycast (new Ray (shootPoint.transform.position, shootPoint.transform.forward), out hit))
+		if (Physics.Raycast (new Ray (player.cam.transform.position, player.cam.transform.forward), out hit))
 		{
 			Quaternion effectRotation = new Quaternion();
 			effectRotation.SetLookRotation (hit.normal);
@@ -49,7 +64,7 @@ public class GunInstance : WeaponInstance
 	}
 
 
-	void OnEnable()
+	void Start()
 	{
 		//TODO: Placeholder, implement procedural gun adding
 		input = weapHandler.input;
@@ -62,13 +77,17 @@ public class GunInstance : WeaponInstance
 			Debug.LogError ("No Animation Component on " + gameObject.name);
 		}
 
+		player = input.Player;
+
 		gun.RegisterShoot (Shoot);
+		input.RegisterInputPause (OnInputPause);
 		input.RegisterInputShoot (OnInputShoot);
 	}
 
 	void OnDisable()
 	{
 		gun.UnregisterShoot (Shoot);
+		input.UnregisterInputPause (OnInputPause);
 		input.UnregisterInputShoot (OnInputShoot);
 	}
 }

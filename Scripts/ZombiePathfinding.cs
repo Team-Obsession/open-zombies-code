@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Zombie))]
 [RequireComponent(typeof(NavMeshAgent))]
 public class ZombiePathfinding : MonoBehaviour 
 {

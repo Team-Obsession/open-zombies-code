@@ -22,6 +22,7 @@ public class PlayerMotor : MonoBehaviour
 	private Rigidbody rb;
 	private Vector3 globalMoveDirection = Vector3.zero;
 	private bool grounded;
+	private bool paused = false;
 
 
 	bool CanJump
@@ -80,6 +81,19 @@ public class PlayerMotor : MonoBehaviour
 		//This is just for potentially limiting the player's movement speed when they're switching weapons
 	}
 
+	void OnInputPause ()
+	{
+		paused = !paused;
+		if (paused)
+		{
+			UnregisterInputs ();
+		}
+		else
+		{
+			RegisterInputs ();
+		}
+	}
+
 	bool GroundedRayCast()
 	{
 		return Physics.Raycast (transform.position, -Vector3.up, 0.01f);
@@ -135,6 +149,18 @@ public class PlayerMotor : MonoBehaviour
 				Debug.LogError ("No PlayerInput on this GameObject");
 			}
 		}
+		input.RegisterInputPause (OnInputPause);
+		RegisterInputs ();
+	}
+
+	void OnDisable() //To unregister all of the callbacks
+	{
+		input.UnregisterInputPause (OnInputPause);
+		UnregisterInputs ();
+	}
+
+	void RegisterInputs()
+	{
 		input.RegisterInputMove (OnInputMove);
 		input.RegisterInputJump (OnInputJump);
 		input.RegisterInputStance (OnInputStance);
@@ -143,7 +169,7 @@ public class PlayerMotor : MonoBehaviour
 		input.RegisterInputSwitch (OnInputSwitch);
 	}
 
-	void OnDisable() //To unregister all of the callbacks
+	void UnregisterInputs()
 	{
 		input.UnregisterInputMove (OnInputMove);
 		input.UnregisterInputJump (OnInputJump);
@@ -153,8 +179,8 @@ public class PlayerMotor : MonoBehaviour
 		input.UnregisterInputSwitch (OnInputSwitch);
 	}
 
-}
 
+}
 
 
 
