@@ -53,6 +53,13 @@ public static class Extensions
 		return closest;
 	}
 
+	public static int CompareRayCastHitByDistance (RaycastHit first, RaycastHit second)
+	{
+		if (first.distance == second.distance) {	return 0;	}
+		return first.distance < second.distance ? -1 : 1;
+	}
+
+
 	public static void SetLayer (this Transform trans, int layer)
 	{
 		trans.gameObject.layer = layer;
@@ -97,6 +104,7 @@ public static class Extensions
 	}
 	
 }
+
 
 
 

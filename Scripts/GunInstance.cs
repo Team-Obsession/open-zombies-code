@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class GunInstance : WeaponInstance
@@ -45,18 +46,32 @@ public class GunInstance : WeaponInstance
 		}
 	}
 
+
 	void Shoot ()
 	{
-		RaycastHit hit;
-		if (Physics.Raycast (new Ray (player.cam.transform.position, player.cam.transform.forward), out hit))
+		RaycastHit[] hits;
+		hits = Physics.RaycastAll (new Ray (player.cam.transform.position, player.cam.transform.forward));
+		if (hits.Length != 0)
 		{
-			Quaternion effectRotation = new Quaternion();
-			effectRotation.SetLookRotation (hit.normal);
-			Instantiate (hitPrefab, hit.point, effectRotation);
-			Actor hitActor = hit.transform.GetComponent<Actor>();
-			if (hitActor != null)
+			//Sort by distance (squared distance, that is)
+			Array.Sort(hits, Extensions.CompareRayCastHitByDistance);
+			bool hasHitObstruction = false;
+			for (int i = 0; i < hits.Length; i++)
 			{
-				hitActor.TakeDamage (gun.damage, player);
+				Actor hitActor = hits[i].transform.GetComponent<Actor>();
+				if (hitActor == null)
+				{
+					hasHitObstruction = true;
+					Quaternion effectRotation = new Quaternion();
+					effectRotation.SetLookRotation (hits[i].normal);
+					Instantiate (hitPrefab, hits[i].point, effectRotation);
+				}
+				else if (!hasHitObstruction)
+				{
+					hitActor.TakeDamage (gun.damage * Mathf.Max(1f - i * 0.2f, 0f), player);
+					player.Points += 10;
+				}
+
 			}
 		}
 		anim.Stop ();
