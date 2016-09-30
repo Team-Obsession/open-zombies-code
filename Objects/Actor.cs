@@ -9,7 +9,7 @@ public class Actor : MonoBehaviour
 	public float Health
 	{ 
 		get {	return health;	}
-		protected set
+		set
 		{
 			if (value != health)
 			{
@@ -36,15 +36,6 @@ public class Actor : MonoBehaviour
 		}
 	}
 	public GameObject prefab;
-
-	//Just to have a zero argument constructor
-	public Actor (){}
-	//The actual constructor to use when creating a new Actor
-	public Actor (float health, float moveSpeed)
-	{
-		this.health = health;
-		this.moveSpeed = moveSpeed;
-	}
 
 	public GameObject SpawnAt (Transform trans)
 	{
@@ -91,7 +82,7 @@ public class Actor : MonoBehaviour
 		to be called as the parameter (DON'T INCLUDE PARENTHESIS IN THE ARGUMENT).
 		EX: call "RegisterDie (PlayDeathAnimation);" in the animation script.
 	*/
-	protected Action cbDie;
+	protected Action<Actor> cbDie;
 	protected Action cbHealthChange;
 	protected Action cbMoveSpeedChange;
 
@@ -99,9 +90,9 @@ public class Actor : MonoBehaviour
 	{
 		if(cbDie != null)
 		{
-			cbDie();
+			cbDie (this);
 		}
-		Debug.Log (gameObject.name + " has died");
+		//Debug.Log (gameObject.name + " has died");
 		//TODO: Implement a death handler script where the actor could play an animation or whatever before being destroyed.
 	}
 
@@ -126,7 +117,7 @@ public class Actor : MonoBehaviour
 	/// Call to have callbackFunc called when this Actor's health reaches zero.
 	/// </summary>
 	/// <param name="callbackFunc">Callback func.</param>
-	public void RegisterDie(Action callbackFunc)
+	public void RegisterDie(Action<Actor> callbackFunc)
 	{
 		cbDie += callbackFunc;
 	}
@@ -135,7 +126,7 @@ public class Actor : MonoBehaviour
 	/// Call to unregister callbackFunc from the Die callback.
 	/// </summary>
 	/// <param name="callbackFunc">Callback func.</param>
-	public void UnregisterDie (Action callbackFunc)
+	public void UnregisterDie (Action<Actor> callbackFunc)
 	{
 		cbDie -= callbackFunc;
 	}
@@ -177,7 +168,6 @@ public class Actor : MonoBehaviour
 	}
 
 }
-
 
 
 

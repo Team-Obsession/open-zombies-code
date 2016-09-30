@@ -54,10 +54,10 @@ public class HUDHandler : MonoBehaviour
 		{
 
 			//Initialize the HUD
-			HUD playerHUD = ((GameObject)Instantiate (hudPrefab)).GetComponent<HUD> (); //Assumes that the prefab has a HUD component
+			HUD playerHUD = ((GameObject) Instantiate (hudPrefab)).GetComponent<HUD> (); //Assumes that the prefab has a HUD component
+			playerHUD.SetPlayer (player);
 			playerHUD.gameObject.name = hudPrefab.name + player.playerIndex;
 			playerHUD.transform.SetParent (this.transform);
-			playerHUD.SetPlayer (player);
 			playerHUDs.Add (player,	playerHUD);
 			playerHUD.gameObject.layer = LayerMask.NameToLayer ("HUD" + player.playerIndex);
 
@@ -82,6 +82,7 @@ public class HUDHandler : MonoBehaviour
 		}
 
 	}
+
 
 	
 }

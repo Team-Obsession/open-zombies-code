@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public static class ExtensionMethods 
+public static class Extensions 
 {
 	public static T GetRandomElement<T> (this T[] array)
 	{
@@ -53,6 +53,13 @@ public static class ExtensionMethods
 		return closest;
 	}
 
+	public static int CompareRayCastHitByDistance (RaycastHit first, RaycastHit second)
+	{
+		if (first.distance == second.distance) {	return 0;	}
+		return first.distance < second.distance ? -1 : 1;
+	}
+
+
 	public static void SetLayer (this Transform trans, int layer)
 	{
 		trans.gameObject.layer = layer;
@@ -85,8 +92,19 @@ public static class ExtensionMethods
 		Vector2 output = new Vector2(input.x / extMag, input.y / extMag);	
 		return output;
 	}
+
+	static public  IEnumerator WaitForSeconds (float seconds)
+	{
+		yield return new WaitForSeconds (seconds);
+	}
+
+	static public  IEnumerator WaitFrame ()
+	{
+		yield return new WaitForEndOfFrame ();
+	}
 	
 }
+
 
 
 

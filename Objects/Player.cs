@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 
 public class Player : Actor 
@@ -12,6 +13,38 @@ public class Player : Actor
 	public float groundControlDamp = 40f; //Higher values yield more responsive movement
 	public float airControlDamp = 10f;
 
+	private int points = 500;
+	public int Points
+	{
+		get {	return points;		}
+		set
+		{
+			if (value != points)
+			{
+				points = value;
+				OnPointsChange ();
+			}
+		}
+	}
+
+	Action<int> cbPointsChange;
+
+	void OnPointsChange()
+	{
+		if (cbPointsChange != null)
+		{
+			cbPointsChange(points);
+		}
+	}
+
+	public void RegisterPointsChange (Action<int> callbackFunc)
+	{
+		cbPointsChange += callbackFunc;
+	}
+	public void UnregisterPointsChange (Action<int> callbackFunc)
+	{
+		cbPointsChange -= callbackFunc;
+	}
 }
 
 

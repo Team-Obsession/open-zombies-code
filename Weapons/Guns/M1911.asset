@@ -15,7 +15,7 @@ MonoBehaviour:
   weaponType: 0
   weaponName: M1911
   movementScalar: 1
-  fireRate: 360
+  fireRate: 480
   reloadSpeed: 1
   damage: 20
   magazineSize: 5

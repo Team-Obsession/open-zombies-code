@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Zombie))]
 [RequireComponent(typeof(NavMeshAgent))]
 public class ZombiePathfinding : MonoBehaviour 
 {
@@ -40,7 +39,7 @@ public class ZombiePathfinding : MonoBehaviour
 		Player player = col.gameObject.GetComponent<Player>();
 		if(player != null) //we hit a player
 		{
-			player.TakeDamage (0f, zombie);
+			player.TakeDamage (50f, zombie);
 		}
 	}
 

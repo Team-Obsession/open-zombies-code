@@ -94,20 +94,6 @@ public class PlayerInput : MonoBehaviour {
 	float timeHeldShootAlt = 0f;
 	public float TimeHeldShootAlt { get { return timeHeldShootAlt; }}
 
-	bool inputLocked = false;
-	public bool LockState
-	{
-		get	{	return inputLocked;	}
-		set
-		{
-			if (value != inputLocked)
-			{
-				inputLocked = value;
-				OnInputLocked();
-			}
-		}
-	}
-
 
 	void Start()
 	{
@@ -267,14 +253,6 @@ public class PlayerInput : MonoBehaviour {
 		if (cbInputPause != null)
 		{
 			cbInputPause();
-		}
-	}
-
-	void OnInputLocked()
-	{
-		if (cbInputLocked != null)
-		{
-			cbInputLocked (LockState);
 		}
 	}
 

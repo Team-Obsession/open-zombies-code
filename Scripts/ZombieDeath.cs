@@ -5,13 +5,17 @@ public class ZombieDeath : MonoBehaviour
 {
 	public Zombie zombie; //this zombie
 
-	void OnDie()
+	void OnDie (Actor actor)
 	{
 		Destroy(this.gameObject);
 	}
 
+	void Test()
+	{
+		Debug.Log("Zombie health change");
+	}
 
-	void OnEnable()
+	void Start()
 	{
 		if ((zombie == null) && ((zombie = GetComponent<Zombie>()) == null))
 		{
