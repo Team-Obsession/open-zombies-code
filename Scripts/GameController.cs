@@ -35,6 +35,7 @@ public class GameController : MonoBehaviour
 	public GameObject[] playerSpawnPoints; //Don't worry about initializing these, the Editor will handle that
 	public GameObject[] zombieSpawnPoints;
 
+	private bool roundStart = true;
 
 	//Non-editor variables and properties
 	private int numNetworkPlayers = 0;
@@ -138,8 +139,7 @@ public class GameController : MonoBehaviour
 	void StartRound (int round)
 	{
 		OnRoundChange (round); //Call the callback
-
-		Extensions.WaitForSeconds (roundStartDelay);
+		roundStart = true; // so ZombieSpawner can know
 		ZombiesThisRound = 5 * round;
 		QueueZombieSpawn (ZombiesThisRound);
 
@@ -185,6 +185,11 @@ public class GameController : MonoBehaviour
 	{
 		while (true)
 		{
+			if (roundStart)
+			{
+				yield return new WaitForSeconds (roundStartDelay);
+				roundStart = false;
+			}
 			foreach (GameObject spawn in zombieSpawnPoints)
 			{
 				zombieSpawnPointTimers[spawn] -= Time.deltaTime; //Change
