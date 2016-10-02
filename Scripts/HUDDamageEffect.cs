@@ -2,7 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class HUDDamageEffect : MonoBehaviour
+public class HUDDamageEffect : HUDRelatedScript
 {
 
 	public Color flashColor;
@@ -29,14 +29,14 @@ public class HUDDamageEffect : MonoBehaviour
 		flash.color = Color.clear;
 	}
 
-	void Start()
+	public override void OnInitialize()
 	{
-		player = GetComponentInParent<HUD>().GetPlayer ();
+		player = GetComponentInParent<HUD>().Player;
 		flash = GetComponent<Image>();
 		player.RegisterHealthChange (OnPlayerHealthChange);
 	}
 
-	void OnDisable()
+	public override void OnTerminate()
 	{
 		player.UnregisterHealthChange (OnPlayerHealthChange);
 	}

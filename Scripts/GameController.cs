@@ -34,6 +34,8 @@ public class GameController : MonoBehaviour
 	public GameObject zombiePrefab;
 	public GameObject[] playerSpawnPoints; //Don't worry about initializing these, the Editor will handle that
 	public GameObject[] zombieSpawnPoints;
+	public Weapon defaultWep1;
+	public Weapon defaultWep2;
 
 	private bool roundStart = true;
 
@@ -85,8 +87,31 @@ public class GameController : MonoBehaviour
 
 	Dictionary <GameObject, float> zombieSpawnPointTimers;
 
+	List<PlayerRelatedScript> scripts = new List<PlayerRelatedScript> ();
+	public void RegisterInitialize (PlayerRelatedScript script)
+	{
+//		Debug.Log ("Added " + script.GetType ().ToString () + " to scripts to be initialized"); 
+		scripts.Add (script);
+	}
 
-	void Awake ()
+	public void InitializePlayerScripts ()
+	{
+		foreach (PlayerRelatedScript script in scripts)
+		{
+			try
+			{
+//			Debug.Log ("Initialized " + script.GetType ().ToString ()); 
+			script.Initialize ();
+			}
+			catch (Exception e)
+			{
+				Debug.LogError(e);
+			}
+		}
+	}
+
+
+	void Start ()
 	{
 		localPlayers = new List<LocalPlayer> (numLocalPlayers);
 		playerGameObjects = new List<GameObject> (numLocalPlayers);
@@ -97,12 +122,14 @@ public class GameController : MonoBehaviour
 			localPlayers.Add (playerGameObjects [i].AddComponent<LocalPlayer> ());
 			localPlayers [i].prefab = playerPrefab;
 			localPlayers [i].playerIndex = i + 1;
-			localPlayers [i].hudHandler = localPlayers [i].gameObject.AddComponent<PlayerHUDHandler> ();
 			if (i == 0)
 			{
 				localPlayers [i].cam.gameObject.AddComponent<AudioListener> ();
 			}
+			localPlayers[i].weaponHandler.loadout = new PlayerLoadout (i + 1, defaultWep1, defaultWep2);
 		}
+
+		InitializePlayerScripts ();
 
 		zombies = new List<Zombie>();
 		zombieTransforms = new List<Transform>();

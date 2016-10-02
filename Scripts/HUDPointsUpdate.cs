@@ -1,9 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using System;
 using System.Collections;
 
-public class HUDPointsUpdate : MonoBehaviour
+public class HUDPointsUpdate : HUDRelatedScript
 {
 	LocalPlayer player;
 	Text text;
@@ -13,9 +12,9 @@ public class HUDPointsUpdate : MonoBehaviour
 		text.text = newPoints.ToString ();
 	}
 
-	void Start()
+	public override void OnInitialize()
 	{
-		player = GetComponentInParent<HUD>().GetPlayer ();
+		player = GetComponentInParent<HUD>().Player;
 		if (player != null)
 		{
 			player.RegisterPointsChange (OnPointsUpdate);
@@ -24,9 +23,12 @@ public class HUDPointsUpdate : MonoBehaviour
 		OnPointsUpdate (player.Points);
 	}
 
-	void OnDisable()
+	public override void OnTerminate()
 	{
-		player.UnregisterPointsChange (OnPointsUpdate);
+		if (player != null)
+		{
+			player.UnregisterPointsChange (OnPointsUpdate);
+		}
 	}
 }
 

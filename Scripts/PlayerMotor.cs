@@ -5,7 +5,7 @@ using System.Collections;
 
 [RequireComponent(typeof(PlayerInput))]
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerMotor : MonoBehaviour 
+public class PlayerMotor : PlayerRelatedScript 
 {
 
 	float realMoveSpeed;
@@ -17,39 +17,45 @@ public class PlayerMotor : MonoBehaviour
 	private Player player;
 	private PlayerInput input;
 	private Collider myCollider;
+	private PlayerWeaponHandler weaponHandler;
+	private WeaponInstance weapon;
+	private PauseHandler pauseHandler;
 
 	private int notPlayerMask = ~ (1 << 8);
 	private Rigidbody rb;
 	private Vector3 globalMoveDirection = Vector3.zero;
 	private bool grounded;
-	private bool paused = false;
-
-
-	bool CanJump
-	{
-		get
-		{
-			return grounded;
-		}
-	}
+	private float weaponScalar = 1f;
 
 	void OnInputMove(Vector2 inputVector)
 	{
-		realControlDamp = CanJump ? player.groundControlDamp : player.airControlDamp;
-		realAirControlScalar = CanJump ? 1f : player.airControlScalar;
+		realControlDamp = grounded ? player.groundControlDamp : player.airControlDamp;
+		realAirControlScalar = grounded ? 1f : player.airControlScalar;
 		inputVector = inputVector.gradientNormalize2D();
 		globalMoveDirection = transform.TransformDirection (	new Vector3( inputVector.x, 0f, inputVector.y)	);
-		globalMoveDirection *= player.baseMoveSpeed * realSprintScalar * realAirControlScalar;
+		globalMoveDirection *= player.baseMoveSpeed * realSprintScalar * realAirControlScalar * weaponScalar;
 		rb.velocity = new Vector3	(	Mathf.Lerp(	rb.velocity.x, globalMoveDirection.x, realControlDamp * Time.deltaTime),
 									 	rb.velocity.y,
 									 	Mathf.Lerp( rb.velocity.z, globalMoveDirection.z, realControlDamp * Time.deltaTime)
 									);
 	}
 
+	void OnInputNotMove (float timeHeld)
+	{
+		if (grounded && input.TimeHeldNotJump > player.extraJumpTime)
+		{
+			rb.velocity = Vector3.Lerp (rb.velocity, Vector3.zero, Time.deltaTime * 50f);
+		}
+		else
+		{
+			
+		}
+	}
+
 	void OnInputJump ( float timeHeld )
 	{
 
-		if(!CanJump || input.TimeHeldNotJump <= 0.05f) {	return;		}
+		if(!grounded || input.TimeHeldNotJump <= 0.05f) {	return;		}
 		if (timeHeld == 0f)
 		{
 			rb.AddForce (0f, player.baseJumpForce, 0f, ForceMode.VelocityChange);
@@ -68,7 +74,7 @@ public class PlayerMotor : MonoBehaviour
 
 	void OnInputSprint (float timeHeld)
 	{
-		realSprintScalar = Mathf.Lerp (1, player.sprintScalar, Mathf.Clamp(timeHeld * 3f, 0, 1));
+		realSprintScalar = Mathf.Lerp (1, player.sprintScalar, Mathf.Clamp (timeHeld * 3f, 0, 1));
 	}
 
 	void OnInputWalk (float timeHeld)
@@ -81,17 +87,22 @@ public class PlayerMotor : MonoBehaviour
 		//This is just for potentially limiting the player's movement speed when they're switching weapons
 	}
 
-	void OnInputPause ()
+	void OnPauseStateChange (bool newState)
 	{
-		paused = !paused;
-		if (paused)
+		if (newState)
 		{
-			UnregisterInputs ();
+			UnregisterCallbacks ();
 		}
 		else
 		{
-			RegisterInputs ();
+			RegisterCallbacks ();
 		}
+	}
+
+	void OnWeaponChange (WeaponInstance currentWeapon)
+	{
+		weapon = currentWeapon;
+		weaponScalar = weapon.weapon.movementScalar;
 	}
 
 	bool GroundedRayCast()
@@ -113,70 +124,71 @@ public class PlayerMotor : MonoBehaviour
 		grounded = GroundedCapsuleCast ();
 	}
 
-	void Start() //initialization
+	public override void OnInitialize() //initialization
 	{
-		player = GetComponent<Player>();
-		if(player == null)
+		if(player == null && ((player = GetComponent<LocalPlayer>()) == null))
 		{
-			Debug.LogError ("No Player on this GameObject");
+			Debug.LogError (gameObject.name + " couldn't find a player.");
 		}
 
-		if(input == null)
+		if(weaponHandler == null && ((weaponHandler = GetComponent<PlayerWeaponHandler>()) == null))
 		{
-			input = GetComponent<PlayerInput>();
-			if (input == null)
-			{
-				Debug.LogError ("No PlayerInput on this GameObject");
-			}
+			Debug.LogError (gameObject.name + " couldn't find a PlayerWeaponHandler");
 		}
 
-		rb = GetComponent<Rigidbody>();
-		if (rb == null)
+		if(input == null && ((input = player.GetComponent<PlayerInput>()) == null))
 		{
-			Debug.LogError ("No Rigidbody on this GameObject");
+			Debug.LogError (gameObject.name + " couldn't find a PlayerInput from its player");
 		}
 
-		myCollider = GetComponent<Collider>();
+		if(rb == null && ((rb = GetComponent<Rigidbody>()) == null))
+		{
+			Debug.LogError (gameObject.name + " couldn't find a Rigidbody");
+		}
+
+		if(myCollider == null && ((myCollider = GetComponent<Collider>()) == null))
+		{
+			Debug.LogError (gameObject.name + " couldn't find a Collider");
+		}
+
+		if(pauseHandler == null && ((pauseHandler = PauseHandler.Instance) == null))
+		{
+			Debug.LogError (gameObject.name + " couldn't find a PauseHandler");
+		}
+
+		RegisterCallbacks ();
 	}
 
-	void OnEnable() //To register all of the callbacks
+
+	public override void OnTerminate ()
 	{
-		if(input == null)
-		{
-			input = GetComponent<PlayerInput>();
-			if (input == null)
-			{
-				Debug.LogError ("No PlayerInput on this GameObject");
-			}
-		}
-		input.RegisterInputPause (OnInputPause);
-		RegisterInputs ();
+		UnregisterCallbacks ();
 	}
 
-	void OnDisable() //To unregister all of the callbacks
+	void RegisterCallbacks()
 	{
-		input.UnregisterInputPause (OnInputPause);
-		UnregisterInputs ();
-	}
-
-	void RegisterInputs()
-	{
+		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
 		input.RegisterInputMove (OnInputMove);
+		input.RegisterInputNotMove (OnInputNotMove);
 		input.RegisterInputJump (OnInputJump);
 		input.RegisterInputStance (OnInputStance);
 		input.RegisterInputSprint (OnInputSprint);
 		input.RegisterInputWalk (OnInputWalk);
 		input.RegisterInputSwitch (OnInputSwitch);
+		weaponHandler.RegisterWeaponChange (OnWeaponChange);
 	}
 
-	void UnregisterInputs()
+	void UnregisterCallbacks()
 	{
+		pauseHandler.UnregisterPauseStateChange (OnPauseStateChange);
 		input.UnregisterInputMove (OnInputMove);
+		input.UnregisterInputNotMove (OnInputNotMove);
 		input.UnregisterInputJump (OnInputJump);
 		input.UnregisterInputStance (OnInputStance);
 		input.UnregisterInputSprint (OnInputSprint);
 		input.UnregisterInputWalk (OnInputWalk);
 		input.UnregisterInputSwitch (OnInputSwitch);
+		weaponHandler.UnregisterWeaponChange (OnWeaponChange);
 	}
 
 

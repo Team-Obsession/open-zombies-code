@@ -36,8 +36,14 @@ public class HUD : MonoBehaviour
 	}
 		
 	LocalPlayer player;
-	public LocalPlayer GetPlayer()	{	return player;	}
-	public void SetPlayer (LocalPlayer player)	{	this.player = player;	}
+	public LocalPlayer Player	
+	{ 
+		get { return player; }
+		set
+		{
+			player = value;
+		}
+	}
 
 	/*TODO: Redo to allow for multi-monitor edge cases (i.e. split vertically for two monitors and two players instead of horizontally)
 				Maybe this could be a neat GUI selector

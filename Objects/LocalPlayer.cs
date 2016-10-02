@@ -16,9 +16,12 @@ public class LocalPlayer : Player {
 	void OnEnable()
 	{
 		input = GetComponent<PlayerInput>();
+		input.Player = this;
 		look = GetComponentInChildren<PlayerLook>();
+		look.player = this;
 		motor = GetComponent<PlayerMotor>();
 		weaponHandler = GetComponent<PlayerWeaponHandler>();
+		weaponHandler.player = this;
 		hudHandler = GetComponent<PlayerHUDHandler>();
 		cam = GetComponentInChildren<Camera>();
 	}

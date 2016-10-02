@@ -3,13 +3,15 @@ using System;
 using System.Collections;
 
 
-public class PlayerInput : MonoBehaviour {
-
+public class PlayerInput : MonoBehaviour
+{
+	public PauseHandler pauseHandler;
+	
 	private LocalPlayer player;
 	public LocalPlayer Player
 	{
 		get { return player;	}
-		protected set
+		set
 		{
 			player = value;
 		}
@@ -61,6 +63,9 @@ public class PlayerInput : MonoBehaviour {
 	Vector2 moveVector = Vector2.zero;
 	Vector2 lookVector = Vector2.zero;
 
+	float timeHeldNotMove = 0f;
+	public float TimeHeldNotMove { get {return timeHeldNotMove; }}
+
 	float timeHeldJump = 0f;
 	public float TimeHeldJump { get { return timeHeldJump; }}
 
@@ -79,11 +84,17 @@ public class PlayerInput : MonoBehaviour {
 	float timeHeldInteract = 0f;
 	public float TimeHeldInteract { get { return timeHeldInteract; }}
 
+	float timeHeldReload = 0f;
+	public float TimeHeldReload { get { return timeHeldReload; }}
+
 	float timeHeldSwitch = 0f;
 	public float TimeHeldSwitch { get { return timeHeldSwitch; }}
 
 	float timeHeldAim = 0f;
 	public float TimeHeldAim { get {return timeHeldAim; }}
+
+	float timeHeldNotAim = 0f;
+	public float TimeHeldNotAim { get {return timeHeldNotAim; }}
 
 	float timeHeldAimAlt = 0f;
 	public float TimeHeldAimAlt { get { return timeHeldAimAlt; }}
@@ -103,23 +114,28 @@ public class PlayerInput : MonoBehaviour {
 			Debug.LogError ("No Player component on Player " + PlayerIndex + "'s GameObject");
 		}
 		PlayerIndex = player.playerIndex;
+
+		pauseHandler = PauseHandler.Instance;
 	}
 
 	void Update()  //The meat and potatoes
 	{
 		if (GetButtonDown ("Pause"))
 		{
-			OnInputPause ();
+			pauseHandler.TogglePause ();
 		}
 
 		if(	GetAxis ("Horizontal") != 0f	||  GetAxis ("Vertical") != 0f )
 		{
-			moveVector = new Vector2 (	GetAxis ("Horizontal"), GetAxis ("Vertical")	);
+			moveVector = new Vector2 (	GetAxisRaw ("Horizontal"), GetAxisRaw ("Vertical")	);
 			OnInputMove (moveVector);
+			timeHeldNotMove = 0f;
 		}
 		else
 		{
 			moveVector = Vector2.zero;
+			timeHeldNotMove += Time.deltaTime;
+			CallbackTimeHeld (cbInputNotMove, timeHeldNotMove);
 		}
 
 		if (GetAxis ("Mouse X") != 0f || GetAxis ("Mouse Y") != 0f)
@@ -180,6 +196,16 @@ public class PlayerInput : MonoBehaviour {
 			timeHeldInteract = 0f;
 		}
 
+		if (GetButton ("Reload"))
+		{
+			CallbackTimeHeld (cbInputReload, timeHeldReload);
+			timeHeldReload += Time.deltaTime; 
+		}
+		else
+		{
+			timeHeldReload = 0f;
+		}
+
 		if(GetButton ("Switch"))
 		{
 			CallbackTimeHeld (cbInputSwitch, timeHeldSwitch);
@@ -193,11 +219,14 @@ public class PlayerInput : MonoBehaviour {
 		if(GetButton ("Aim"))
 		{
 			CallbackTimeHeld (cbInputAim, timeHeldAim);
-			timeHeldAim += Time.deltaTime; 
+			timeHeldNotAim = 0f;
+			timeHeldAim += Time.deltaTime;
 		}
 		else
 		{
+			CallbackTimeHeld (cbInputNotAim, timeHeldNotAim);
 			timeHeldAim = 0f;
+			timeHeldNotAim += Time.deltaTime;
 		}
 
 		if(GetButton ("AimAlt"))
@@ -232,9 +261,9 @@ public class PlayerInput : MonoBehaviour {
 	}
 
 	//Callbacks
-	Action cbInputPause;
 	Action<bool> cbInputLocked;
 	Action<Vector2> cbInputMove;
+	Action<float> cbInputNotMove;
 	Action<Vector2> cbInputLook;
 	Action<float> cbInputJump;
 	Action<float> cbInputNotJump;
@@ -242,19 +271,14 @@ public class PlayerInput : MonoBehaviour {
 	Action<float> cbInputSprint;
 	Action<float> cbInputWalk;
 	Action<float> cbInputInteract;
+	Action<float> cbInputReload;
 	Action<float> cbInputSwitch;
 	Action<float> cbInputAim;
+	Action<float> cbInputNotAim;
 	Action<float> cbInputAimAlt;
 	Action<float> cbInputShoot;
 	Action<float> cbInputShootAlt;
 
-	void OnInputPause()
-	{
-		if (cbInputPause != null)
-		{
-			cbInputPause();
-		}
-	}
 
 	void OnInputMove (Vector2 inputVector)
 	{
@@ -281,15 +305,6 @@ public class PlayerInput : MonoBehaviour {
 	}
 
 
-	public void RegisterInputPause(Action callbackFunc)
-	{
-		cbInputPause += callbackFunc;
-	}
-	public void UnregisterInputPause (Action callbackFunc)
-	{
-		cbInputPause -= callbackFunc;
-	}
-
 	public void RegisterInputLocked (Action<bool> callbackFunc)
 	{
 		cbInputLocked += callbackFunc;
@@ -306,6 +321,15 @@ public class PlayerInput : MonoBehaviour {
 	public void UnregisterInputMove (Action<Vector2> callbackFunction)
 	{
 		cbInputMove -= callbackFunction;
+	}
+
+	public void RegisterInputNotMove (Action<float> callbackFunc)
+	{
+		cbInputNotMove += callbackFunc;
+	}
+	public void UnregisterInputNotMove (Action<float> callbackFunc)
+	{
+		cbInputNotMove -= callbackFunc;
 	}
 
 	public void RegisterInputLook (Action<Vector2> callbackFunction)
@@ -371,6 +395,15 @@ public class PlayerInput : MonoBehaviour {
 		cbInputInteract -= callbackFunction;
 	}
 
+	public void RegisterInputReload (Action<float> callbackFunc)
+	{
+		cbInputReload += callbackFunc;
+	}
+	public void UnregisterInputReload (Action<float> callbackFunc)
+	{
+		cbInputReload -= callbackFunc;
+	}
+
 	public void RegisterInputSwitch (Action<float> callbackFuntion)
 	{
 		cbInputSwitch += callbackFuntion;
@@ -387,6 +420,15 @@ public class PlayerInput : MonoBehaviour {
 	public void UnregisterInputAim (Action<float> callbackFunction)
 	{
 		cbInputAim -= callbackFunction;
+	}
+
+	public void RegisterInputNotAim (Action<float> callbackFunc)
+	{
+		cbInputNotAim += callbackFunc;
+	}
+	public void UnregisterInputNotAim (Action<float> callbackFunc)
+	{
+		cbInputNotAim -= callbackFunc;
 	}
 
 	public void RegisterInputAimAlt (Action<float> callbackFuntion)
