@@ -11,6 +11,7 @@ public class GunInstance : WeaponInstance
 	public GameObject hitPrefab;
 	public Animation anim;
 
+	PauseHandler pauseHandler;
 	Gun gun;
 	float timeKeeper;
 
@@ -153,6 +154,18 @@ public class GunInstance : WeaponInstance
 		return bulletsShot;
 	}
 
+	void OnPauseStateChange (bool newState)
+	{
+		if (newState)
+		{
+			UnregisterCallbacks ();
+		}
+		else
+		{
+			RegisterCallbacks ();
+		}
+	}
+
 	public override void OnInitialize ()
 	{
 		if (gun == null)
@@ -171,8 +184,13 @@ public class GunInstance : WeaponInstance
 		{
 			Debug.LogError ("No Animation Component on " + gameObject.name);
 		}
+		if(pauseHandler == null && ((pauseHandler = PauseHandler.Instance) == null))
+		{
+			Debug.LogError ("No PauseHandler found by " + gameObject.name);
+		}
 
 		RegisterCallbacks ();
+		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
 
 		if (!hasInitialized)
 		{
@@ -187,6 +205,7 @@ public class GunInstance : WeaponInstance
 
 	public override void OnTerminate()
 	{
+		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
 		if (player == null || input == null || weapHandler == null)	{ 	return;		}
 		UnregisterCallbacks ();
 	}

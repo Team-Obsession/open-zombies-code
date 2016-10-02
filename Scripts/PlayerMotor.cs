@@ -46,10 +46,6 @@ public class PlayerMotor : PlayerRelatedScript
 		{
 			rb.velocity = Vector3.Lerp (rb.velocity, Vector3.zero, Time.deltaTime * 50f);
 		}
-		else
-		{
-			
-		}
 	}
 
 	void OnInputJump ( float timeHeld )
@@ -157,17 +153,18 @@ public class PlayerMotor : PlayerRelatedScript
 		}
 
 		RegisterCallbacks ();
+		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
 	}
 
 
 	public override void OnTerminate ()
 	{
 		UnregisterCallbacks ();
+		pauseHandler.UnregisterPauseStateChange (OnPauseStateChange);
 	}
 
 	void RegisterCallbacks()
 	{
-		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
 		input.RegisterInputMove (OnInputMove);
 		input.RegisterInputNotMove (OnInputNotMove);
 		input.RegisterInputJump (OnInputJump);
@@ -180,7 +177,6 @@ public class PlayerMotor : PlayerRelatedScript
 
 	void UnregisterCallbacks()
 	{
-		pauseHandler.UnregisterPauseStateChange (OnPauseStateChange);
 		input.UnregisterInputMove (OnInputMove);
 		input.UnregisterInputNotMove (OnInputNotMove);
 		input.UnregisterInputJump (OnInputJump);
