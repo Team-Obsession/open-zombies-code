@@ -11,4 +11,4 @@ Ideally Open Zombies will be able to cater to different playstyles, such as:
 The non-code assets may be released / linked to later, after a substantial amount have been created.
 
 The latest master and upstream builds can be checked out at
-https://drive.google.com/open?id=0B4QCn5uDxA9Id2VvVUJ2WHFNT2c
+https://drive.google.com/open?id=0B4QCn5uDxA9IVnZUeENCWTUyNkk
