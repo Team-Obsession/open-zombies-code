@@ -4,17 +4,19 @@ using System.Collections;
 
 public class HUDRoundUpdate : MonoBehaviour
 {
-	Text text;
+	Text thisText;
 
 	void OnRoundChange (int round)
 	{
 		//TODO: Implement a neat effect / animation
-		text.text = round;
+		thisText.text = round.ToString ();
 	}
 
-	void Start()
+	void OnEnable()
 	{
-		//GameController.Instance ().RegisterRoundChange(OnRoundChange);
+		thisText = GetComponent<Text>();
+		GameController.Instance ().RegisterRoundChange(OnRoundChange);
+		OnRoundChange (GameController.Instance ().Round);
 	}
 }
 

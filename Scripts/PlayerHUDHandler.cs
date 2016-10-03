@@ -6,36 +6,30 @@ using System.Collections.Generic;
 /// <summary>
 /// Handles the player's input, querying HUDHandler to switch menus, and sizing the player's camera
 /// </summary>
-public class PlayerHUDHandler : MonoBehaviour
+public class PlayerHUDHandler : HUDRelatedScript
 {
-	
 
 	public List<GameObject> menuObjects;
 	public LocalPlayer player;
 	public Camera cam;
 
-	PlayerInput input;
-
 	private GameController gameController;
 	private int index;
 
-	private bool isPaused = false;
 
-	void OnInputPause()
+	void OnPauseStateChange (bool newState)
 	{
-		isPaused = !isPaused;
-		HUDHandler.Instance ().SwitchMenu (player, isPaused ? "Pause Canvas" : "HUD Canvas" );
+		HUDHandler.Instance.SwitchMenu (player, newState ? "Pause Canvas" : "HUD Canvas" );
 	}
 
-	void OnEnable()
+	public override void OnInitialize()
 	{
 		gameController = GameController.Instance ();
 		player = GetComponent<LocalPlayer>();
 		this.index = player.playerIndex;
 		this.cam = player.cam;
 
-		input = player.input;
-		input.RegisterInputPause (OnInputPause);
+		PauseHandler.Instance.RegisterPauseStateChange (OnPauseStateChange);
 
 		//Set up the camera viewport
 		switch (gameController.numLocalPlayers)
@@ -65,5 +59,9 @@ public class PlayerHUDHandler : MonoBehaviour
 		cam.cullingMask = cam.cullingMask | LayerMask.NameToLayer ("HUD" + player.playerIndex);
 	}
 
+	public override void OnTerminate ()
+	{
+		PauseHandler.Instance.UnregisterPauseStateChange (OnPauseStateChange);
+	}
 
 }

@@ -11,6 +11,7 @@ public class PlayerLook : MonoBehaviour
 
 	private float xRotation;
 	private Quaternion newRot;
+	private PauseHandler pauseHandler;
 
 	void Start()
 	{
@@ -28,13 +29,28 @@ public class PlayerLook : MonoBehaviour
 		transform.localRotation = newRot;
 	}
 
+	void OnPauseStateChange (bool newState)
+	{
+		if(newState)
+		{
+			input.UnregisterInputLook (OnInputLook);
+		}
+		else
+		{
+			input.RegisterInputLook (OnInputLook);
+		}
+	}
+
 	void OnEnable()
 	{
 		input.RegisterInputLook (OnInputLook);
+		pauseHandler = PauseHandler.Instance;
+		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
 	}
 
 	void OnDisable()
 	{
 		input.UnregisterInputLook (OnInputLook);
+		pauseHandler.UnregisterPauseStateChange (OnPauseStateChange);
 	}
 }

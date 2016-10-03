@@ -2,23 +2,26 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class HUDHandler : MonoBehaviour
+public class HUDHandler : PlayerRelatedScript
 {
 	/// <summary>
 	/// Call to get the scene's HUDHandler
 	/// </summary>
 	private static HUDHandler hudHandler;
-	public static HUDHandler Instance()
+	public static HUDHandler Instance
 	{
-		if(!hudHandler)
+		get
 		{
-			hudHandler = FindObjectOfType(typeof (HUDHandler)) as HUDHandler;
-			if(!hudHandler)
+			if (!hudHandler)
 			{
-				Debug.LogError("There must be one HUDHandler in the scene");
+				hudHandler = FindObjectOfType (typeof(HUDHandler)) as HUDHandler;
+				if (!hudHandler)
+				{
+					Debug.LogError ("There must be one HUDHandler in the scene");
+				}
 			}
+			return hudHandler;
 		}
-		return hudHandler;
 	}
 
 	public GameObject hudPrefab; //The UI that every LocalPlayer will have a copy of
@@ -45,7 +48,23 @@ public class HUDHandler : MonoBehaviour
 
 	}
 
-	void Awake ()
+	List<HUDRelatedScript> scripts = new List<HUDRelatedScript> ();
+	public void RegisterInitialize (HUDRelatedScript script)
+	{
+//		Debug.Log ("Added " + script.GetType ().ToString () + " to scripts to be initialized"); 
+		scripts.Add (script);
+	}
+
+	public void InitializeHUDScripts ()
+	{
+		foreach (HUDRelatedScript script in scripts)
+		{
+//			Debug.Log ("Initialized " + script.GetType ().ToString ()); 
+			script.Initialize ();
+		}
+	}
+
+	public override void OnInitialize ()
 	{
 		playerHUDs = new Dictionary <Player, HUD> ();
 		playerHUDHandlers = new Dictionary <Player, PlayerHUDHandler> ();
@@ -54,10 +73,10 @@ public class HUDHandler : MonoBehaviour
 		{
 
 			//Initialize the HUD
-			HUD playerHUD = ((GameObject)Instantiate (hudPrefab)).GetComponent<HUD> (); //Assumes that the prefab has a HUD component
+			HUD playerHUD = ((GameObject) Instantiate (hudPrefab)).GetComponent<HUD> (); //Assumes that the prefab has a HUD component
+			playerHUD.Player = player;
 			playerHUD.gameObject.name = hudPrefab.name + player.playerIndex;
 			playerHUD.transform.SetParent (this.transform);
-			playerHUD.SetPlayer (player);
 			playerHUDs.Add (player,	playerHUD);
 			playerHUD.gameObject.layer = LayerMask.NameToLayer ("HUD" + player.playerIndex);
 
@@ -70,18 +89,18 @@ public class HUDHandler : MonoBehaviour
 			SwitchMenu (player, playerHUDs [player].defaultMenu.name);
 
 			//Change the UI's scale for multiple players
-			foreach (RectTransform trans in playerHUD.GetComponent<RectTransform>())
-			{
-				trans.anchorMin = playerHUDHandler.cam.rect.min;
-				trans.anchorMax = playerHUDHandler.cam.rect.max;
-				trans.pivot = playerHUDHandler.cam.rect.center;
-			}
+			RectTransform trans = playerHUD.GetComponent<RectTransform>();
+			trans.anchorMin = player.cam.rect.min;
+			trans.anchorMax = player.cam.rect.max;
+			trans.pivot = player.cam.rect.center;
 
 			//Set the Player's parameter(s) accordingly
 			player.hudHandler = playerHUDHandler;
 		}
 
+		InitializeHUDScripts ();
 	}
+
 
 	
 }

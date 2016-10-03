@@ -1,24 +1,106 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class PlayerWeaponHandler : MonoBehaviour
+public class PlayerWeaponHandler : PlayerRelatedScript
 {
+	public LocalPlayer player;
 	public PlayerInput input;
-	public List<WeaponInstance> weapons;
+	public PlayerLoadout loadout;
+	public Transform weaponPoint;
 
-	Player player;
-	WeaponInstance currentWeapon; //TODO: add dual-wield functionality
+	WeaponInstance weaponInstance1;
+	WeaponInstance weaponInstance2;
 
-	void OnEnable()
+	WeaponInstance currentWeapon; //TODO: dual-wield functionality?
+	public WeaponInstance CurrentWeapon
 	{
-		if (input == null)
+		get
 		{
-			if ((input = GetComponent<PlayerInput>()) == null)
-			{
-				Debug.LogError ("No PlayerInput componenet on " + this.gameObject.name);
-			}
+			return currentWeapon;
 		}
-		player = input.Player;
-	}	
+	}
+
+	void OnInputSwitch (float timeHeld)
+	{
+		if (timeHeld != 0f)	{	return;	}
+		currentWeapon = currentWeapon == weaponInstance1 ? weaponInstance2 : weaponInstance1;
+
+		CurrentWeapon.gameObject.SetActive (true);
+		(currentWeapon == weaponInstance1 ? weaponInstance2 : weaponInstance1 ).gameObject.SetActive (false);
+
+		OnWeaponChange ();
+	}
+
+	public override void OnInitialize()
+	{
+		player = GetComponent<LocalPlayer>();
+		if(input == null && ((input = player.GetComponent<PlayerInput>()) == null))
+		{
+			Debug.LogError (gameObject.name + " couldn't find an input from its player");
+		}
+		input.RegisterInputSwitch (OnInputSwitch);
+
+		weaponInstance1 = loadout.weapon1.Spawn (weaponPoint).GetComponent<WeaponInstance>();
+		weaponInstance2 = loadout.weapon2.Spawn (weaponPoint).GetComponent<WeaponInstance>();
+
+
+		weaponInstance1.player = player;
+		weaponInstance1.input = input;
+		weaponInstance1.weapHandler = this;
+		weaponInstance2.player = player;
+		weaponInstance2.input = input;
+		weaponInstance2.weapHandler = this;
+
+		weaponInstance1.Initialize ();
+		weaponInstance2.Initialize ();
+
+		weaponInstance2.gameObject.SetActive (false);
+
+		currentWeapon = weaponInstance1;
+
+		OnWeaponChange ();
+	}
+
+	public override void OnTerminate()
+	{
+		if (input == null) {	return;		}
+		input.UnregisterInputAim (OnInputSwitch);
+	}
+
+/*	
+	=====================================
+	|			CALLBACKS				|
+	=====================================
+*/
+
+	Action<WeaponInstance> cbWeaponChange;
+
+	void OnWeaponChange ()
+	{
+		if (cbWeaponChange != null)
+		{
+			cbWeaponChange (currentWeapon);
+		}
+	}
+
+	public void RegisterWeaponChange (Action<WeaponInstance> callbackFunc)
+	{
+		cbWeaponChange += callbackFunc;
+	}
+
+	public void UnregisterWeaponChange (Action<WeaponInstance> callbackFunc)
+	{
+		cbWeaponChange -= callbackFunc;
+	}
+
+
+
+
 }
+
+
+
+
+
