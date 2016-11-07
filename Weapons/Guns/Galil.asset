@@ -18,8 +18,8 @@ MonoBehaviour:
   fireRate: 720
   reloadSpeed: 2
   damage: 250
+  fireType: 0
   magazineSize: 30
   maxExtraMags: 3
+  bulletsPerShot: 1
   aimTime: 0.2
-  automatic: 1
-  burstSize: 1
