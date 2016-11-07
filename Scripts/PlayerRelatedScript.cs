@@ -3,8 +3,7 @@ using System.Collections;
 
 public class PlayerRelatedScript : MonoBehaviour
 {
-	public GameController gc;
-
+	protected GameController gc;
 
 	private bool hasInitialized = false;
 

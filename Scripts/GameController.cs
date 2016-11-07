@@ -269,7 +269,7 @@ public class GameController : MonoBehaviour
 		cbLocalPlayerCountChange -= callbackFunc;
 	}
 
-	/*
+	/*TODO
 	public void RegisterNetworkPlayerCountChange (Action callbackFunc)
 	{
 		cbNetworkPlayerCountChange += callbackFunc;

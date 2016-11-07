@@ -3,7 +3,7 @@ using System.Collections;
 
 public class HUDRelatedScript : MonoBehaviour
 {
-	public HUDHandler handler;
+	protected HUDHandler handler;
 
 	private bool hasInitialized = false;
 
