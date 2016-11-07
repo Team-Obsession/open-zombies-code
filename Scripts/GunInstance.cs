@@ -13,7 +13,7 @@ public class GunInstance : WeaponInstance
 
 	PauseHandler pauseHandler;
 	Gun gun;
-	float timeKeeper;
+	IShootable fireType;
 
 	private int magazineSize, maxExtraMags, bulletsInMag, excessAmmo;
 
@@ -41,22 +41,9 @@ public class GunInstance : WeaponInstance
 		get		{	return maxExtraMags * (magazineSize + 1);	}
 	}
 
-	void OnInputShoot (float timeHeld)
-	{
-		if(timeHeld == 0f)
-		{
-			Shoot(1);
-			timeKeeper = Time.time;
-		}
-		else if (gun.automatic)
-		{
-			if(Time.time - timeKeeper >= 60.0f / gun.fireRate)
-			{
-				Shoot(1);
-				timeKeeper = Time.time;
-			}
-		}
-	}
+	/**
+	*	look in fireType for the handling of shoot input
+	*/
 
 	void OnInputAim (float timeHeld)
 	{
@@ -189,6 +176,8 @@ public class GunInstance : WeaponInstance
 			Debug.LogError ("No PauseHandler found by " + gameObject.name);
 		}
 
+		SetFireType ();
+
 		RegisterCallbacks ();
 		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
 
@@ -202,7 +191,6 @@ public class GunInstance : WeaponInstance
 
 	}
 
-
 	public override void OnTerminate()
 	{
 		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
@@ -212,7 +200,7 @@ public class GunInstance : WeaponInstance
 
 	void RegisterCallbacks ()
 	{
-		input.RegisterInputShoot (OnInputShoot);
+		input.RegisterInputShoot (fireType.OnInputShoot);
 		input.RegisterInputReload (OnInputReload);
 		input.RegisterInputAim (OnInputAim);
 		input.RegisterInputNotAim (OnInputNotAim);
@@ -220,10 +208,32 @@ public class GunInstance : WeaponInstance
 
 	void UnregisterCallbacks ()
 	{
-		input.UnregisterInputShoot (OnInputShoot);
+		input.UnregisterInputShoot (fireType.OnInputShoot);
 		input.UnregisterInputReload (OnInputReload);
 		input.UnregisterInputAim (OnInputAim);
 		input.UnregisterInputNotAim (OnInputNotAim);
+	}
+
+	public void SetFireType ()
+	{
+		switch (gun.fireType)
+		{
+			case FireType.Automatic:
+				fireType = new Shoot_Automatic (this, gun);
+			break;
+
+			case FireType.SemiAuto :
+				fireType = new Shoot_SemiAuto (this, gun);
+			break;
+
+			case FireType.BoltAction :
+				fireType = new Shoot_BoltAction (this, gun);
+			break;
+
+			default :
+				fireType = new Shoot_SemiAuto (this, gun);
+			break;
+		}
 	}
 
 
