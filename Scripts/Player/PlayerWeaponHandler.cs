@@ -66,7 +66,7 @@ public class PlayerWeaponHandler : PlayerRelatedScript
 		return CurrentWeapon;
 	}
 
-	public WeaponInstance pickupWeapon (Weapon weapon)
+	public WeaponInstance PickupWeapon (Weapon weapon)
 	{
 		//We don't want to pick up a weapon if we already have it or if we somehow get passed a null weapon
 		if (weapon == null || GetWeaponInstance (weapon) != null)	{	return null;	}
@@ -114,8 +114,8 @@ public class PlayerWeaponHandler : PlayerRelatedScript
 		}
 		input.RegisterInputSwitch (OnInputSwitch);
 
-		weaponInstances[0] = loadout.weapon1 != null ? pickupWeapon (loadout.weapon1) : null;
-		weaponInstances[1] = loadout.weapon2 != null ? pickupWeapon (loadout.weapon2) : null;
+		weaponInstances[0] = loadout.weapon1 != null ? PickupWeapon (loadout.weapon1) : null;
+		weaponInstances[1] = loadout.weapon2 != null ? PickupWeapon (loadout.weapon2) : null;
 
 	}
 

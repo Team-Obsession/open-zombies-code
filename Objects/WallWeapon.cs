@@ -42,7 +42,7 @@ public class WallWeapon : Interactable
         IsSatisfied = true;
         candidate.Points -= hasWeapon ? ammoCost : weaponCost;
 
-        pWeapHandler.pickupWeapon (gun);
+        pWeapHandler.PickupWeapon (gun);
 
         OnInteract (candidate);
         return true;
