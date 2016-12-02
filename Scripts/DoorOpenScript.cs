@@ -2,9 +2,10 @@
 using System;
 using System.Collections;
 
+//TODO: Placeholder script. We probably don't want doors to blink out of existence when they're opened
 public class DoorOpenScript : MonoBehaviour
 {
-
+	
 	public Door door;
 
 	void OnOpen (Player p, Interactable i)

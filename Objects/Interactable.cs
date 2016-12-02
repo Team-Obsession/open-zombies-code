@@ -2,35 +2,21 @@
 using System;
 using System.Collections;
 
-
-//TODO: maybe make Interactable derive from some prerequesite handling class
 [RequireComponent (typeof(Collider))]
-public abstract class Interactable : MonoBehaviour
+public abstract class Interactable : Prerequisite
 {
-	public string interactText = "Interact";
+	[SerializeField]
+	protected string interactText = "Interact";
 
 	private bool isInteractable = true;
 	public bool IsInteractable
 	{
-		get 	{ return isInteractable;	}
+		get { 	return isInteractable;	}
 		protected set
 		{
 			isInteractable = value;
 		}
 	}
-
-	private bool isSatisfied = false;
-	public bool IsSatisfied
-	{
-		get		{	return isSatisfied;		}
-		protected set
-		{
-			isSatisfied = value;
-		}
-	}
-
-	//TODO: prerequisites on Interactables
-	public Interactable[] prerequisites;
 
 	/// <summary>
 	/// Interact with this Interactable. Should call OnInteract in its body and check to determine if the prerequisites are satisfied
@@ -69,6 +55,8 @@ public abstract class Interactable : MonoBehaviour
 		if ( (handler = candidate.GetComponent<PlayerInteractHandler>()) == null)	{	return;		}
 		handler.InteractableExit (this);
 	}
+
+	public abstract string InteractText (Player candidate);
 
 
 	/*	

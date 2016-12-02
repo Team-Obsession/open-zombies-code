@@ -64,7 +64,7 @@ public class HUDHandler : PlayerRelatedScript
 		}
 	}
 
-	public override void OnInitialize ()
+	protected override void OnInitialize ()
 	{
 		playerHUDs = new Dictionary <Player, HUD> ();
 		playerHUDHandlers = new Dictionary <Player, PlayerHUDHandler> ();

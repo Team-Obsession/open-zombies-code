@@ -175,6 +175,10 @@ public class GunInstance : WeaponInstance
 		{
 			Debug.LogError ("No PauseHandler found by " + gameObject.name);
 		}
+		if (graphic == null)
+		{
+			graphic = GetComponentInChildren<Renderer>().transform;
+		}
 
 		SetFireType ();
 

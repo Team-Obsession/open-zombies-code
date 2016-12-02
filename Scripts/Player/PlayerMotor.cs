@@ -120,7 +120,7 @@ public class PlayerMotor : PlayerRelatedScript
 		grounded = GroundedCapsuleCast ();
 	}
 
-	public override void OnInitialize() //initialization
+	protected override void OnInitialize() //initialization
 	{
 		if(player == null && ((player = GetComponent<LocalPlayer>()) == null))
 		{
@@ -157,7 +157,7 @@ public class PlayerMotor : PlayerRelatedScript
 	}
 
 
-	public override void OnTerminate ()
+	protected override void OnTerminate ()
 	{
 		UnregisterCallbacks ();
 		pauseHandler.UnregisterPauseStateChange (OnPauseStateChange);

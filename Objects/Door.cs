@@ -17,12 +17,17 @@ public class Door : Interactable
 	/// <param name="spender">The interacting player</param>
 	public override bool Interact (Player candidate)
 	{
-		if (state) {	return false;	}
-		if (candidate.Points < cost) {	return false;	}
+		if (state || candidate.Points < cost || !PrerequisitesSatisfied()) {	return false;	}
 		state = true;
+		IsSatisfied = true;
 		candidate.Points -= cost;
 		OnInteract (candidate);
 		return true;
+	}
+
+	public override string InteractText (Player candidate)
+	{
+		return interactText;
 	}
 
 

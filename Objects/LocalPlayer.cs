@@ -21,7 +21,6 @@ public class LocalPlayer : Player {
 		look.player = this;
 		motor = GetComponent<PlayerMotor>();
 		weaponHandler = GetComponent<PlayerWeaponHandler>();
-		weaponHandler.player = this;
 		hudHandler = GetComponent<PlayerHUDHandler>();
 		cam = GetComponentInChildren<Camera>();
 	}

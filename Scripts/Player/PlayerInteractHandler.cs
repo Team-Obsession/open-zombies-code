@@ -9,7 +9,7 @@ public class PlayerInteractHandler : PlayerRelatedScript
 	private PlayerInput input;
 	private List<Interactable> interactCandidates = new List<Interactable>();
 
-	public override void OnInitialize ()
+	protected override void OnInitialize ()
 	{
 
 		if ( (player = GetComponent<LocalPlayer>() ) == null)
@@ -23,7 +23,7 @@ public class PlayerInteractHandler : PlayerRelatedScript
 		input.RegisterInputInteract (OnInputInteract);
 	}
 
-	public override void OnTerminate ()
+	protected override void OnTerminate ()
 	{
 		input.UnregisterInputInteract (OnInputInteract);
 	}

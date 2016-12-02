@@ -105,7 +105,7 @@ public class GameController : MonoBehaviour
 			}
 			catch (Exception e)
 			{
-				Debug.LogError(e);
+				Debug.LogException (e);
 			}
 		}
 	}

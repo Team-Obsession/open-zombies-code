@@ -32,7 +32,7 @@ public class HUDInteractPrompt : HUDRelatedScript
 			return;
 		}
 		text.enabled = true;
-		text.text = interactCandidates[0].interactText;
+		text.text = interactCandidates[0].InteractText (player);
 	}
 
 	public override void OnInitialize ()

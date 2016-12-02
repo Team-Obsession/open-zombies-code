@@ -13,8 +13,8 @@ public class PlayerRelatedScript : MonoBehaviour
 		gc.RegisterInitialize (this);	
 	}
 
-	public virtual void OnInitialize () {}
-	public virtual void OnTerminate () {}
+	protected virtual void OnInitialize () {}
+	protected virtual void OnTerminate () {}
 
 	public void Initialize ()
 	{
