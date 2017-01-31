@@ -56,6 +56,10 @@ public abstract class Interactable : Prerequisite
 		handler.InteractableExit (this);
 	}
 
+	/// <summary>
+	/// Method which returns the appropriate text to be displayed when a player could interact with this Interactable
+	/// </summary>
+	/// <param name="candidate">The player who could potentially interact with this Interactable</param>
 	public abstract string InteractText (Player candidate);
 
 

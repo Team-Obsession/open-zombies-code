@@ -9,6 +9,13 @@ public static class Extensions
 		return array[Random.Range (0, array.Length - 1)];
 	}
 
+	public static T GetRandomElement<T> ( this List<T> list )
+	{
+		if (list.Count == 0)	{	return default (T);	}
+		int rand = Random.Range (0, list.Count - 1);
+		return list[rand];
+	}
+
 	public static Transform ClosestOf (this Transform reference, List<Transform> prospects)
 	{
 		if (prospects.Capacity == 0)

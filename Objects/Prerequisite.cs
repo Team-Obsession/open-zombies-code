@@ -29,6 +29,14 @@ public abstract class Prerequisite : MonoBehaviour
 		}
 	}
 
+	void Start()
+	{
+		if (PrerequisitesSatisfied ())
+		{
+			OnSatisfied ();
+		}
+	}
+
 	public bool PrerequisitesSatisfied ()
 	{
 		if (prerequisites.Count == 0)	{	return true;	}

@@ -14,7 +14,7 @@ public class Door : Interactable
 	/// <returns>
 	/// true if the door was successfully opened, false otherwise
 	/// </returns>
-	/// <param name="spender">The interacting player</param>
+	/// <param name="candidate">The interacting player</param>
 	public override bool Interact (Player candidate)
 	{
 		if (state || candidate.Points < cost || !PrerequisitesSatisfied()) {	return false;	}
