@@ -44,7 +44,7 @@ public class PlayerInteractHandler : PlayerRelatedScript
 	{
 		if (interactCandidates.Count > 0)
 		{
-			interactCandidates[0].Interact (player);
+			interactCandidates[0].Interact (player, timeHeld);
 		}
 	}
 

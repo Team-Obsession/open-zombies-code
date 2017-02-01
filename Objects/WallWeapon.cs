@@ -38,8 +38,11 @@ public class WallWeapon : Interactable
     /// </summary>
     /// <returns>True if transaction successful, false otherwise</returns>
     /// <param name="candidate">The interacting Player</param>
-    public override bool Interact ( Player candidate )
+    public override bool Interact ( Player candidate, float timeHeld )
 	{
+		//We don't want multiple interactions via the player holding down the Interact button for multiple frames
+		if (timeHeld != 0f) {	return false;	}
+
 		//Get the Player's weaponHandler. If it can't be found, not an error
 		PlayerWeaponHandler pWeapHandler;
 		if ((pWeapHandler = candidate.GetComponent<PlayerWeaponHandler> ()) == null)

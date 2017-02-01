@@ -25,7 +25,7 @@ public abstract class Interactable : Prerequisite
 	/// True if successful, false otherwise
 	/// </returns>
 	/// <param name="candidate">The interacting Player</param>
-	public abstract bool Interact (Player candidate);
+	public abstract bool Interact (Player candidate, float timeHeld);
 
 	//TODO: send out network event when player successfully interacts with an Interactable
 	public void OnInteract (Player interactPlayer)
