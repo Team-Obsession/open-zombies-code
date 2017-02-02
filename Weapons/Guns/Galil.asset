@@ -8,18 +8,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a45507a422a810f4e8022f0a9199b84a, type: 3}
+  m_Script: {fileID: 11500000, guid: c0bdbd0b71ddfbf48a4801822b97b47f, type: 3}
   m_Name: Galil
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1000013610798930, guid: 89f1e5c2efd1cb642aee182b267e5166, type: 2}
-  weaponType: 0
-  weaponName: Galil
-  movementScalar: 0.9
-  fireRate: 720
-  reloadSpeed: 2
-  damage: 250
-  fireType: 0
-  magazineSize: 30
-  maxExtraMags: 3
-  bulletsPerShot: 1
-  aimTime: 0.2

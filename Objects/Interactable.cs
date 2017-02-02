@@ -27,6 +27,12 @@ public abstract class Interactable : Prerequisite
 	/// <param name="candidate">The interacting Player</param>
 	public abstract bool Interact (Player candidate, float timeHeld);
 
+	/// <summary>
+	/// Method which returns the appropriate text to be displayed when a player could interact with this Interactable
+	/// </summary>
+	/// <param name="candidate">The player who could potentially interact with this Interactable</param>
+	public abstract string InteractText (Player candidate);
+
 	//TODO: send out network event when player successfully interacts with an Interactable
 	public void OnInteract (Player interactPlayer)
 	{
@@ -55,12 +61,7 @@ public abstract class Interactable : Prerequisite
 		if ( (handler = candidate.GetComponent<PlayerInteractHandler>()) == null)	{	return;		}
 		handler.InteractableExit (this);
 	}
-
-	/// <summary>
-	/// Method which returns the appropriate text to be displayed when a player could interact with this Interactable
-	/// </summary>
-	/// <param name="candidate">The player who could potentially interact with this Interactable</param>
-	public abstract string InteractText (Player candidate);
+		
 
 
 	/*	
