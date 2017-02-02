@@ -19,11 +19,13 @@ public class HUDRelatedScript : MonoBehaviour
 	public void Initialize ()
 	{
 		OnInitialize ();
+		hasInitialized = true;
 	}
 
 	public void Terminate ()
 	{
 		OnTerminate();
+		hasInitialized = false;
 	}
 
 	void OnEnable ()

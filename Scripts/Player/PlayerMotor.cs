@@ -70,7 +70,7 @@ public class PlayerMotor : PlayerRelatedScript
 
 	void OnInputSprint (float timeHeld)
 	{
-		realSprintScalar = Mathf.Lerp (1, player.sprintScalar, Mathf.Clamp (timeHeld * 3f, 0, 1));
+		realSprintScalar = Mathf.Lerp (1, player.sprintScalar, Mathf.Clamp (timeHeld * 5f, 0, 1));
 	}
 
 	void OnInputWalk (float timeHeld)

@@ -14,7 +14,7 @@ public abstract class Prerequisite : MonoBehaviour
 			if (value != isSatisfied)
 			{
 				isSatisfied = value;
-				//TODO: callback
+				OnSatisfied ();
 			}
 		}
 	}
