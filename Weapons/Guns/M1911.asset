@@ -8,6 +8,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0bdbd0b71ddfbf48a4801822b97b47f, type: 3}
+  m_Script: {fileID: 11500000, guid: a45507a422a810f4e8022f0a9199b84a, type: 3}
   m_Name: M1911
   m_EditorClassIdentifier: 
+  prefab: {fileID: 1000010918821010, guid: 60003ffc8725ad943ae9664049590f51, type: 2}
+  weaponType: 0
+  weaponName: M1911
+  movementScalar: 1
+  fireRate: 480
+  reloadSpeed: 1
+  damage: 25
+  fireType: 1
+  magazineSize: 5
+  maxExtraMags: 3
+  bulletsPerShot: 1
+  aimTime: 0.15
