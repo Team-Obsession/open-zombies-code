@@ -40,6 +40,7 @@ public class HUDHandler : PlayerRelatedScript
 				menu.SetActive (true);
 				hud.ActiveMenu = menu;
 			}
+			else if (menu == playerHUDs[player].defaultMenu){}
 			else
 			{
 				menu.SetActive (false);
