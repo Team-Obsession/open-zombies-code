@@ -4,7 +4,9 @@ using System.Collections.Generic;
 
 public class WallWeapon : Interactable
 {
-	
+	[SerializeField]
+	private string ammoText;
+
     [SerializeField]
     private Gun gun; //TODO: generalize to all weapons (refactor WallWeapon to new inheriting class WallGun?)
 
@@ -13,8 +15,6 @@ public class WallWeapon : Interactable
 	[SerializeField]
 	private int ammoCost; //in points
 
-	[SerializeField]
-	private string ammoText = "ammo text";
 
 	/// <summary>
 	/// Returns the appropriate text, depending on whether the candidate Player already has this Gun	/// </summary>
@@ -28,7 +28,7 @@ public class WallWeapon : Interactable
 		}
 
 		bool hasWeapon = pWeapHandler.GetWeaponInstance (gun) != null;
-        return hasWeapon ? ammoText : interactText;
+		return hasWeapon ? ammoText + " " + gun.name + " (" + ammoCost + " points)" : interactText + " " + gun.name + " (" + weaponCost + " points)";
     }
 
     /// <summary>

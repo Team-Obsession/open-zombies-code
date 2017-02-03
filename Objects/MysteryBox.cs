@@ -71,8 +71,8 @@ public class MysteryBox : Interactable
 
 	public override string InteractText (Player candidate)
 	{
-		if (!state) {	return interactText + cost; }
-		return "Pick up " + mysteryWeapon.weaponName;
+		if (!state) {	return interactText + " (" + cost + " points)"; }
+		return "Pick up " + mysteryWeapon.weaponName + "?";
 	}
 
 
