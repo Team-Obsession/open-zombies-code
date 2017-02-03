@@ -66,15 +66,7 @@ public class WallWeapon : Interactable
 		IsSatisfied = true;
 		candidate.Points -= hasWeapon ? ammoCost : weaponCost;
 
-		//If the player already has this Gun, then refill its ammo
-		if (hasWeapon)
-		{
-			((GunInstance)pWeapHandler.GetWeaponInstance(gun)).AddAmmo (gun.maxExtraMags * gun.magazineSize);
-		}
-		else //Otherwise give the Player this Gun
-		{
-			pWeapHandler.PickupWeapon (gun);
-		}
+		pWeapHandler.PickupWeapon (gun);
 
 		//Callback and return successful
         OnInteract (candidate);

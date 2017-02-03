@@ -15,7 +15,7 @@ public class GunInstance : WeaponInstance
 	Gun gun;
 	IShootable fireType;
 
-	private int magazineSize, maxExtraMags, bulletsInMag, extraAmmo;
+	private int magazineSize, bulletsInMag, extraAmmo;
 
 
 	public int BulletsInMag
@@ -38,21 +38,13 @@ public class GunInstance : WeaponInstance
 		{
 			if (value != bulletsInMag)
 			{
-				extraAmmo = Mathf.Min (value, MaxExtraAmmo);
+				extraAmmo = Mathf.Min (value, gun.MaxExtraAmmo);
 				OnBulletCountChange ();
 			}
 		}
 	}
 
-	public int MaxExtraAmmo
-	{
-		get		{	return maxExtraMags * magazineSize;		}
-	}
 
-	public int MaxAmmo
-	{
-		get		{	return maxExtraMags * (magazineSize + 1);	}
-	}
 
 	/**
 	*	look in fireType for the handling of shoot input
@@ -76,6 +68,18 @@ public class GunInstance : WeaponInstance
 		{
 			Reload ();
 		}
+	}
+
+	void OnInputShoot (float timeHeld)
+	{
+		//Check to see if we can shoot
+		if (BulletsInMag == 0)
+		{
+			OnInputReload (timeHeld);
+			return;
+		}
+		//Shoot according to our FireType
+		fireType.OnInputShoot (timeHeld);
 	}
 
 	/// <summary>
@@ -209,9 +213,8 @@ public class GunInstance : WeaponInstance
 		if (!hasInitialized)
 		{
 			magazineSize = gun.magazineSize;
-			maxExtraMags = gun.maxExtraMags;
 			BulletsInMag = magazineSize;
-			extraAmmo = maxExtraMags * magazineSize;
+			extraAmmo = gun.InitialExtraAmmo;
 		}
 
 	}
@@ -225,7 +228,7 @@ public class GunInstance : WeaponInstance
 
 	void RegisterCallbacks ()
 	{
-		input.RegisterInputShoot (fireType.OnInputShoot);
+		input.RegisterInputShoot (OnInputShoot);
 		input.RegisterInputReload (OnInputReload);
 		input.RegisterInputAim (OnInputAim);
 		input.RegisterInputNotAim (OnInputNotAim);
@@ -233,7 +236,7 @@ public class GunInstance : WeaponInstance
 
 	void UnregisterCallbacks ()
 	{
-		input.UnregisterInputShoot (fireType.OnInputShoot);
+		input.UnregisterInputShoot (OnInputShoot);
 		input.UnregisterInputReload (OnInputReload);
 		input.UnregisterInputAim (OnInputAim);
 		input.UnregisterInputNotAim (OnInputNotAim);

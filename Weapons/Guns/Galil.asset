@@ -20,6 +20,7 @@ MonoBehaviour:
   damage: 150
   fireType: 0
   magazineSize: 30
-  maxExtraMags: 3
+  defaultExtraMags: 3
+  maxExtraMags: 6
   bulletsPerShot: 1
   aimTime: 0.2

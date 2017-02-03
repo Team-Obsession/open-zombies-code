@@ -69,7 +69,17 @@ public class PlayerWeaponHandler : PlayerRelatedScript
 	public WeaponInstance PickupWeapon (Weapon weapon)
 	{
 		//We don't want to pick up a weapon if we already have it or if we somehow get passed a null weapon
-		if (weapon == null || GetWeaponInstance (weapon) != null)	{	return null;	}
+		if (weapon == null)	{	return null;	}
+
+		if (GetWeaponInstance (weapon) != null && weapon.weaponType == WeaponType.Gun)
+		{
+			Gun gun = (Gun) weapon;
+			GunInstance instance = (GunInstance) GetWeaponInstance (gun);
+
+			instance.AddAmmo (gun.InitialExtraAmmo);
+
+			return instance;
+		}
 
 		/* Find a good weapon 'slot' to add the weapon to.
 		*  If the player has an empty slot , add it there;
