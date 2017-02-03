@@ -89,16 +89,9 @@ public class GunInstance : WeaponInstance
 		}
 		if(extraAmmo > 0)
 		{
-			if(extraAmmo >= magazineSize - BulletsInMag)
-			{
-				extraAmmo -= magazineSize - BulletsInMag;
-				BulletsInMag = magazineSize;
-			}
-			else
-			{
-				BulletsInMag = extraAmmo;
-				extraAmmo = 0;
-			}
+			int bulletsReloaded = Mathf.Min(ExtraAmmo, magazineSize - BulletsInMag);
+			extraAmmo -= bulletsReloaded;
+			BulletsInMag += bulletsReloaded;
 		}
 		OnReload();
 	}
