@@ -19,7 +19,7 @@ MonoBehaviour:
   reloadSpeed: 1
   damage: 150
   fireType: 0
-  magazineSize: 5
+  magazineSize: 30
   maxExtraMags: 3
   bulletsPerShot: 1
   aimTime: 0.2

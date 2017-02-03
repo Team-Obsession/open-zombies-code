@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,13 +7,13 @@ public static class Extensions
 {
 	public static T GetRandomElement<T> (this T[] array)
 	{
-		return array[Random.Range (0, array.Length - 1)];
+		return array[UnityEngine.Random.Range (0, array.Length)];
 	}
 
 	public static T GetRandomElement<T> ( this List<T> list )
 	{
 		if (list.Count == 0)	{	return default (T);	}
-		int rand = Random.Range (0, list.Count - 1);
+		int rand = UnityEngine.Random.Range (0, list.Count);
 		return list[rand];
 	}
 
@@ -100,9 +101,19 @@ public static class Extensions
 		return output;
 	}
 
+	/// <summary>
+	/// Deprecated?
+	/// </summary>
+	/// <param name="seconds">timer</param>
 	static public  IEnumerator WaitForSeconds (float seconds)
 	{
 		yield return new WaitForSeconds (seconds);
+	}
+
+	static public IEnumerator CallAfterSeconds (Action action, float timer)
+	{
+		yield return new WaitForSeconds (timer);
+		action ();
 	}
 
 	static public  IEnumerator WaitFrame ()

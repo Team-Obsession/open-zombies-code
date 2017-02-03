@@ -24,6 +24,11 @@ public class HUDInteractPrompt : HUDRelatedScript
 		UpdateText();
 	}
 
+	public void OnInteract (Interactable obj)
+	{
+		UpdateText ();
+	}
+
 	void UpdateText()
 	{
 		if (interactCandidates.Count == 0)
@@ -48,15 +53,27 @@ public class HUDInteractPrompt : HUDRelatedScript
 		{
 			Debug.LogError (name + " doesn't have a Text attached");
 		}
-		pHandler.RegisterInteractableEnter (OnInteractableEnter);
-		pHandler.RegisterInteractableExit (OnInteractableExit);
+		RegisterCallbacks ();
 		UpdateText ();
 	}
 
 	public override void OnTerminate ()
 	{
+		UnregisterCallbacks ();
+	}
+
+	private void RegisterCallbacks ()
+	{
+		pHandler.RegisterInteractableEnter (OnInteractableEnter);
+		pHandler.RegisterInteractableExit (OnInteractableExit);
+		pHandler.RegisterInteract (OnInteract);
+	}
+
+	private void UnregisterCallbacks ()
+	{
 		pHandler.UnregisterInteractableEnter (OnInteractableEnter);
 		pHandler.UnregisterInteractableExit (OnInteractableExit);
+		pHandler.UnregisterInteract (OnInteract);
 	}
 }
 

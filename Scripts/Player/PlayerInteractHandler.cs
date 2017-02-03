@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class PlayerInteractHandler : PlayerRelatedScript
 {
+
 	private LocalPlayer player;
 	private PlayerInput input;
 	private List<Interactable> interactCandidates = new List<Interactable>();
@@ -45,6 +46,7 @@ public class PlayerInteractHandler : PlayerRelatedScript
 		if (interactCandidates.Count > 0)
 		{
 			interactCandidates[0].Interact (player, timeHeld);
+			OnInteract (interactCandidates [0]);
 		}
 	}
 
@@ -60,6 +62,12 @@ public class PlayerInteractHandler : PlayerRelatedScript
 		cbInteractableExit (obj);
 	}
 
+	void OnInteract (Interactable obj)
+	{
+		if (cbInteract == null) {	return;		}
+		cbInteract (obj);
+	}
+
 	/*	
 	=====================================
 	|			CALLBACKS				|
@@ -68,6 +76,7 @@ public class PlayerInteractHandler : PlayerRelatedScript
 
 	private Action<Interactable> cbInteractableEnter;
 	private Action<Interactable> cbInteractableExit;
+	private Action<Interactable> cbInteract;
 
 	public void RegisterInteractableEnter (Action<Interactable> callbackFunc)
 	{
@@ -85,6 +94,15 @@ public class PlayerInteractHandler : PlayerRelatedScript
 	public void UnregisterInteractableExit (Action<Interactable> callbackFunc)
 	{
 		cbInteractableExit -= callbackFunc;
+	}
+
+	public void RegisterInteract (Action<Interactable> callbackFunc)
+	{
+		cbInteract += callbackFunc;
+	}
+	public void UnregisterInteract (Action<Interactable> callbackFunc)
+	{
+		cbInteract -= callbackFunc;
 	}
 
 }

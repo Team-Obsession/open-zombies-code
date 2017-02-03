@@ -80,6 +80,7 @@ public abstract class Interactable : Prerequisite
 	{
 		cbInteract -= callbackFunc;
 	}
+
 }
 
 
