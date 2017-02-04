@@ -16,11 +16,14 @@ MonoBehaviour:
   weaponName: M1911
   movementScalar: 1
   fireRate: 480
-  reloadSpeed: 1
+  reloadSpeed: 0.35
   damage: 25
   fireType: 1
   magazineSize: 8
-  defaultExtraMags: 3
+  defaultExtraMags: 4
   maxExtraMags: 10
   bulletsPerShot: 1
   aimTime: 0.15
+  aimAccuracy: 0
+  hipAccuracy: 20
+  moveAccuracy: 30

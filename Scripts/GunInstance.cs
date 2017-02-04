@@ -16,6 +16,8 @@ public class GunInstance : WeaponInstance
 	IShootable fireType;
 
 	private int magazineSize, bulletsInMag, extraAmmo;
+	private float currentAccuracy = 0f;
+	private bool reloading = false, cocking = false;
 
 
 	public int BulletsInMag
@@ -33,10 +35,10 @@ public class GunInstance : WeaponInstance
 
 	public int ExtraAmmo
 	{
-		get		{ return extraAmmo; }
+		get	{	 return extraAmmo;	 }
 		protected set
 		{
-			if (value != bulletsInMag)
+			if (value != extraAmmo)
 			{
 				extraAmmo = Mathf.Min (value, gun.MaxExtraAmmo);
 				OnBulletCountChange ();
@@ -46,18 +48,21 @@ public class GunInstance : WeaponInstance
 
 
 
+
 	/**
 	*	look in fireType for the handling of shoot input
 	*/
 
 	void OnInputAim (float timeHeld)
 	{
+		currentAccuracy = Mathf.Lerp (currentAccuracy, gun.aimAccuracy, timeHeld / gun.aimTime);
 		graphic.position = Vector3.Lerp (graphic.position, aimPoint.position, timeHeld / gun.aimTime);
 		graphic.rotation = Quaternion.Lerp (graphic.rotation, aimPoint.rotation, timeHeld / gun.aimTime);
 	}
 
 	void OnInputNotAim (float timeHeld)
 	{
+		currentAccuracy = Mathf.Lerp (currentAccuracy, gun.hipAccuracy, timeHeld / gun.aimTime);
 		graphic.position = Vector3.Lerp (graphic.position, hipPoint.position, timeHeld / gun.aimTime);
 		graphic.rotation = Quaternion.Lerp (graphic.rotation, hipPoint.rotation, timeHeld / gun.aimTime);
 	}
@@ -66,12 +71,14 @@ public class GunInstance : WeaponInstance
 	{
 		if (timeHeld == 0f)
 		{
-			Reload ();
+			reloading = true;
+			StartCoroutine (Extensions.CallAfterSeconds(Reload, gun.reloadSpeed));
 		}
 	}
 
 	void OnInputShoot (float timeHeld)
 	{
+		if (reloading)		{		return;		}
 		//Check to see if we can shoot
 		if (BulletsInMag == 0)
 		{
@@ -87,16 +94,13 @@ public class GunInstance : WeaponInstance
 	/// </summary>
 	public void Reload()
 	{
-		if(BulletsInMag == magazineSize)
+		if (ExtraAmmo > 0)
 		{
-			return;
-		}
-		if(extraAmmo > 0)
-		{
-			int bulletsReloaded = Mathf.Min(ExtraAmmo, magazineSize - BulletsInMag);
-			extraAmmo -= bulletsReloaded;
+			int bulletsReloaded = ExtraAmmo < magazineSize - BulletsInMag ? ExtraAmmo : magazineSize - bulletsInMag;
+			ExtraAmmo -= bulletsReloaded;
 			BulletsInMag += bulletsReloaded;
 		}
+		reloading = false;
 		OnReload();
 	}
 
@@ -105,54 +109,47 @@ public class GunInstance : WeaponInstance
 	/// Returns the actual number of bullets shot.
 	/// </summary>
 	/// <param name="numBullets">Number bullets.</param>
-	public int Shoot (int numBullets)
+	public int Shoot ( int numBullets )
 	{
-		int bulletsShot = 0;
-		if (BulletsInMag > 0)
-		{
-			if(BulletsInMag >= numBullets)
-			{
-				BulletsInMag -= numBullets;
-				bulletsShot = numBullets;
-			}
-			else
-			{
-				BulletsInMag = 0;
-				bulletsShot = numBullets - BulletsInMag;
-			}
+		int bulletsShot = Mathf.Min (BulletsInMag, numBullets);
 		RaycastHit[] hits;
-		hits = Physics.RaycastAll (new Ray (player.cam.transform.position, player.cam.transform.forward));
-		if (hits.Length != 0)
+		for (int j = 0; j < bulletsShot * gun.bulletsPerShot; j++)
 		{
-			//Sort by distance (squared distance, that is)
-			Array.Sort (hits, Extensions.CompareRayCastHitByDistance);
-			bool hasHitObstruction = false;
-			int triggerColliderCount = 0;
-			for (int i = 0; i < hits.Length; i++)
+			hits = Physics.RaycastAll (new Ray (player.cam.transform.position, player.cam.transform.forward)/*Extensions.RotateRay (player.cam.transform, UnityEngine.Random.value * currentAccuracy, UnityEngine.Random.value * 360f)*/);
+			if (hits.Length != 0)
 			{
-				if (hits[i].collider.isTrigger)
+				//Sort by distance (squared distance, that is)
+				Array.Sort (hits, Extensions.CompareRayCastHitByDistance);
+				bool hasHitObstruction = false;
+				int triggerColliderCount = 0;
+				for (int i = 0; i < hits.Length; i++)
 				{
-					triggerColliderCount++;
-					continue;
+					if (hits [i].collider.isTrigger)
+					{
+						triggerColliderCount++;
+						continue;
+					}
+					Actor hitActor = hits [i].transform.GetComponent<Actor> ();
+					if (hitActor == null /*&& hits[i].collider.isTrigger == false*/)
+					{
+						hasHitObstruction = true;
+						Quaternion effectRotation = new Quaternion ();
+						effectRotation.SetLookRotation (hits [i].normal);
+						Instantiate (hitPrefab, hits [i].point, effectRotation);
+					}
+					else if (!hasHitObstruction)
+					{
+						hitActor.TakeDamage (gun.damage * Mathf.Max (1f - (i - triggerColliderCount) * 0.2f, 0f), player);
+						player.Points += 10;
+					}
 				}
-				Actor hitActor = hits[i].transform.GetComponent<Actor>();
-				if (hitActor == null /*&& hits[i].collider.isTrigger == false*/)
-				{
-					hasHitObstruction = true;
-					Quaternion effectRotation = new Quaternion();
-					effectRotation.SetLookRotation (hits[i].normal);
-					Instantiate (hitPrefab, hits[i].point, effectRotation);
-				}
-				else if (!hasHitObstruction)
-				{
-					hitActor.TakeDamage (gun.damage * Mathf.Max(1f - (i - triggerColliderCount) * 0.2f, 0f), player);
-					player.Points += 10;
-				}
-
 			}
 		}
-		anim.Stop ();
-		anim.Play ();
+		BulletsInMag -= bulletsShot;
+		if (bulletsShot > 0)
+		{
+			anim.Stop ();
+			anim.Play ();
 		}
 		return bulletsShot;
 	}
@@ -215,6 +212,7 @@ public class GunInstance : WeaponInstance
 			magazineSize = gun.magazineSize;
 			BulletsInMag = magazineSize;
 			extraAmmo = gun.InitialExtraAmmo;
+			currentAccuracy = gun.hipAccuracy;
 		}
 
 	}

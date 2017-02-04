@@ -7,7 +7,7 @@ public class Gun : Weapon
 {
 	public FireType fireType; //i.e. semi-auto, bolt-action
 	public int magazineSize = 10, defaultExtraMags = 3, maxExtraMags = 10, bulletsPerShot = 1;
-	public float aimTime = 0.2f;
+	public float aimAccuracy = 0f, hipAccuracy = 30f;
 
 	public int InitialExtraAmmo
 	{

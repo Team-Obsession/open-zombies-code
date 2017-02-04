@@ -5,18 +5,43 @@ using System.Collections;
 
 public class HUDReticleScript : HUDRelatedScript
 {
+	[SerializeField]
+	Sprite image; //pivot assumed to be right
+	Canvas canvas;
+
 	LocalPlayer player;
 	PlayerInput input;
-	Image reticle;
+	PlayerWeaponHandler pWeapHandler;
+	Weapon weap;
+	float aimTime = 0.5f;
+
+	Vector3 aimScale = Vector3.one;
+	Vector3 hipScale = Vector3.one;
+
 
 	void OnInputAim (float timeHeld)
 	{
-		reticle.enabled = false;
+		if (weap.weaponType == WeaponType.Gun)
+		{
+
+		}
+
 	}
 
 	void OnInputNotAim (float timeHeld)
 	{
-		reticle.enabled = true;
+		
+	}
+
+	void OnWeaponChange (WeaponInstance newWeap)
+	{
+		weap = newWeap.weapon;
+		if (weap.weaponType == WeaponType.Gun)
+		{
+			Gun gun = (Gun) weap;
+
+		}
+		aimTime = weap.aimTime;
 	}
 
 	public override void OnInitialize ()
@@ -30,21 +55,49 @@ public class HUDReticleScript : HUDRelatedScript
 		{
 			Debug.LogError (GetType ().ToString () + " on " + name + " couldn't get a PlayerInput from its LocalPlayer");
 		}
-		if (reticle == null && ((reticle = GetComponent<Image>()) == null))
+		if ((pWeapHandler = player.GetComponent<PlayerWeaponHandler> ()) == null)
+		{
+			Debug.LogError (GetType ().ToString () + " on " + name + " couldn't get a PlayerWeaponHandler from its LocalPlayer");
+		}
+		if (canvas == null && ((canvas = GetComponent<Canvas>()) == null))
 		{
 			Debug.LogError (GetType ().ToString () + " on " + name + " couldn't find an Image");
 		}
-		input.RegisterInputAim (OnInputAim);
-		input.RegisterInputNotAim (OnInputNotAim);
+		RegisterCallbacks();
+	}
+
+	private void CreateReticle()
+	{
 		
 	}
 
+	private void ChangeReticleAccuracy (float accuracy) //accuracy is in degrees
+	{
+
+	}
+
 	public override void OnTerminate ()
+	{
+		UnregisterCallbacks ();
+	}
+
+	public void RegisterCallbacks ()
+	{
+		input.RegisterInputAim (OnInputAim);
+		input.RegisterInputNotAim (OnInputNotAim);
+		pWeapHandler.RegisterWeaponChange (OnWeaponChange);
+	}
+
+	public void UnregisterCallbacks ()
 	{
 		if (input != null)
 		{
 			input.UnregisterInputAim (OnInputAim);
 			input.UnregisterInputNotAim (OnInputNotAim);
+		}
+		if (pWeapHandler != null)
+		{
+			pWeapHandler.UnregisterWeaponChange (OnWeaponChange);
 		}
 	}
 }
