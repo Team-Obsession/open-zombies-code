@@ -14,7 +14,7 @@ public class Player : Actor
 	public float groundControlDamp = 5f; //Higher values yield more responsive movement
 	public float airControlDamp = 3f;
 
-	private int points = 500;
+	private int points = 1000;
 	public int Points
 	{
 		get {	return points;		}

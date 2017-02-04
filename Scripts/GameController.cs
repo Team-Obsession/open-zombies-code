@@ -32,8 +32,7 @@ public class GameController : MonoBehaviour
 	public int maxConcurrentZombies = 25;
 	public GameObject playerPrefab;
 	public GameObject zombiePrefab;
-	public GameObject[] playerSpawnPoints; //Don't worry about initializing these, the Editor will handle that
-	public GameObject[] zombieSpawnPoints;
+
 	public Weapon defaultWep1;
 	public Weapon defaultWep2;
 
@@ -63,6 +62,9 @@ public class GameController : MonoBehaviour
 		}
 	}
 
+	private List<PlayerSpawnPoint> playerSpawnPoints = new List<PlayerSpawnPoint>();
+	private List<ZombieSpawnPoint> zombieSpawnPoints = new List<ZombieSpawnPoint>();
+
 	private List<LocalPlayer> localPlayers;
 	public List<LocalPlayer> LocalPlayers 
 	{
@@ -79,13 +81,13 @@ public class GameController : MonoBehaviour
 	private List<GameObject> playerGameObjects;
 	public List<GameObject> PlayerGameObjects {		get {return playerGameObjects;} protected set {playerGameObjects = value;}	}
 
-	private List<Zombie> zombies;
+	private List<Zombie> zombies = new List<Zombie> ();
 	public List<Zombie> Zombies {	get {return zombies;} protected set {zombies = value;}	}
 
-	private List<Transform> zombieTransforms;
+	private List<Transform> zombieTransforms = new List<Transform>();
 	public List<Transform> ZombieTransforms {	get {return zombieTransforms;} protected set {zombieTransforms = value;}	}
 
-	Dictionary <GameObject, float> zombieSpawnPointTimers;
+	Dictionary <ZombieSpawnPoint, float> zombieSpawnPointTimers = new Dictionary<ZombieSpawnPoint, float>();
 
 	List<PlayerRelatedScript> scripts = new List<PlayerRelatedScript> ();
 	public void RegisterInitialize (PlayerRelatedScript script)
@@ -105,7 +107,7 @@ public class GameController : MonoBehaviour
 			}
 			catch (Exception e)
 			{
-				Debug.LogError(e);
+				Debug.LogException (e);
 			}
 		}
 	}
@@ -117,8 +119,8 @@ public class GameController : MonoBehaviour
 		playerGameObjects = new List<GameObject> (numLocalPlayers);
 		for (int i = 0; i < numLocalPlayers; i++)
 		{
-			GameObject randSpawn = playerSpawnPoints.GetRandomElement<GameObject> ();
-			playerGameObjects.Add ((GameObject)Instantiate (playerPrefab, randSpawn.transform.position, randSpawn.transform.rotation));
+			Transform randSpawn = playerSpawnPoints.GetRandomElement<PlayerSpawnPoint> ().transform;
+			playerGameObjects.Add ((GameObject)Instantiate (playerPrefab, randSpawn.position, randSpawn.rotation));
 			localPlayers.Add (playerGameObjects [i].AddComponent<LocalPlayer> ());
 			localPlayers [i].prefab = playerPrefab;
 			localPlayers [i].playerIndex = i + 1;
@@ -131,13 +133,6 @@ public class GameController : MonoBehaviour
 
 		InitializePlayerScripts ();
 
-		zombies = new List<Zombie>();
-		zombieTransforms = new List<Transform>();
-		zombieSpawnPointTimers = new Dictionary<GameObject, float> ();
-		foreach (GameObject spawn in zombieSpawnPoints)
-		{
-			zombieSpawnPointTimers.Add (spawn, roundStartDelay);
-		}
 		StartCoroutine (ZombieSpawner ());
 		Round = 1;
 	}
@@ -217,8 +212,9 @@ public class GameController : MonoBehaviour
 				yield return new WaitForSeconds (roundStartDelay);
 				roundStart = false;
 			}
-			foreach (GameObject spawn in zombieSpawnPoints)
+			foreach (ZombieSpawnPoint spawn in zombieSpawnPoints)
 			{
+				if (!spawn.PrerequisitesSatisfied()) {	continue;	}
 				zombieSpawnPointTimers[spawn] -= Time.deltaTime; //Change
 				if (zombieSpawnPointTimers[spawn] <= 0f && zombiesToSpawn > 0  && spawnedZombies < maxConcurrentZombies)
 				{
@@ -260,6 +256,26 @@ public class GameController : MonoBehaviour
 	}
 
 
+	public void RegisterPlayerSpawnPoint (PlayerSpawnPoint psp)
+	{
+		playerSpawnPoints.Add (psp);
+	}
+	public void UnregisterPlayerSpawnPoint (PlayerSpawnPoint psp)
+	{
+		playerSpawnPoints.Remove (psp);
+	}
+
+	public void RegisterZombieSpawnPoint (ZombieSpawnPoint zsp)
+	{
+		zombieSpawnPoints.Add (zsp);
+		zombieSpawnPointTimers.Add (zsp, roundStartDelay);
+	}
+	public void UnregisterZombieSpawnPoint (ZombieSpawnPoint zsp)
+	{
+		zombieSpawnPoints.Remove (zsp);
+		zombieSpawnPointTimers.Remove (zsp);
+	}
+
 	public void RegisterLocalPlayerCountChange (Action callbackFunc)
 	{
 		cbLocalPlayerCountChange += callbackFunc;
@@ -269,7 +285,7 @@ public class GameController : MonoBehaviour
 		cbLocalPlayerCountChange -= callbackFunc;
 	}
 
-	/*
+	/*TODO
 	public void RegisterNetworkPlayerCountChange (Action callbackFunc)
 	{
 		cbNetworkPlayerCountChange += callbackFunc;

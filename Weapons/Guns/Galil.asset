@@ -14,12 +14,13 @@ MonoBehaviour:
   prefab: {fileID: 1000013610798930, guid: 89f1e5c2efd1cb642aee182b267e5166, type: 2}
   weaponType: 0
   weaponName: Galil
-  movementScalar: 0.9
+  movementScalar: 1
   fireRate: 720
-  reloadSpeed: 2
-  damage: 250
+  reloadSpeed: 1
+  damage: 150
   fireType: 0
   magazineSize: 30
-  maxExtraMags: 3
+  defaultExtraMags: 3
+  maxExtraMags: 6
   bulletsPerShot: 1
   aimTime: 0.2

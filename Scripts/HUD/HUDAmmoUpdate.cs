@@ -29,6 +29,12 @@ public class HUDAmmoUpdate : HUDRelatedScript
 
 	void OnWeaponChange (WeaponInstance newCurrentWeapon)
 	{
+		if (newCurrentWeapon == null)
+		{
+			text.enabled = false;
+			return;
+		}
+		text.enabled = true;
 		WeaponInstance oldWeapon = currentWeapon;
 		currentWeapon = newCurrentWeapon;
 		if (oldWeapon != null)

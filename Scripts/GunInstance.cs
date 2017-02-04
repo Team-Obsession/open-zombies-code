@@ -15,7 +15,7 @@ public class GunInstance : WeaponInstance
 	Gun gun;
 	IShootable fireType;
 
-	private int magazineSize, maxExtraMags, bulletsInMag, excessAmmo;
+	private int magazineSize, bulletsInMag, extraAmmo;
 
 
 	public int BulletsInMag
@@ -33,13 +33,18 @@ public class GunInstance : WeaponInstance
 
 	public int ExtraAmmo
 	{
-		get		{	return excessAmmo;	}
+		get		{ return extraAmmo; }
+		protected set
+		{
+			if (value != bulletsInMag)
+			{
+				extraAmmo = Mathf.Min (value, gun.MaxExtraAmmo);
+				OnBulletCountChange ();
+			}
+		}
 	}
 
-	public int MaxAmmo
-	{
-		get		{	return maxExtraMags * (magazineSize + 1);	}
-	}
+
 
 	/**
 	*	look in fireType for the handling of shoot input
@@ -65,6 +70,18 @@ public class GunInstance : WeaponInstance
 		}
 	}
 
+	void OnInputShoot (float timeHeld)
+	{
+		//Check to see if we can shoot
+		if (BulletsInMag == 0)
+		{
+			OnInputReload (timeHeld);
+			return;
+		}
+		//Shoot according to our FireType
+		fireType.OnInputShoot (timeHeld);
+	}
+
 	/// <summary>
 	/// Reload this gun.
 	/// </summary>
@@ -74,18 +91,11 @@ public class GunInstance : WeaponInstance
 		{
 			return;
 		}
-		if(excessAmmo > 0)
+		if(extraAmmo > 0)
 		{
-			if(excessAmmo >= magazineSize - BulletsInMag)
-			{
-				excessAmmo -= magazineSize - BulletsInMag;
-				BulletsInMag = magazineSize;
-			}
-			else
-			{
-				BulletsInMag = excessAmmo;
-				excessAmmo = 0;
-			}
+			int bulletsReloaded = Mathf.Min(ExtraAmmo, magazineSize - BulletsInMag);
+			extraAmmo -= bulletsReloaded;
+			BulletsInMag += bulletsReloaded;
 		}
 		OnReload();
 	}
@@ -115,12 +125,18 @@ public class GunInstance : WeaponInstance
 		if (hits.Length != 0)
 		{
 			//Sort by distance (squared distance, that is)
-			Array.Sort(hits, Extensions.CompareRayCastHitByDistance);
+			Array.Sort (hits, Extensions.CompareRayCastHitByDistance);
 			bool hasHitObstruction = false;
+			int triggerColliderCount = 0;
 			for (int i = 0; i < hits.Length; i++)
 			{
+				if (hits[i].collider.isTrigger)
+				{
+					triggerColliderCount++;
+					continue;
+				}
 				Actor hitActor = hits[i].transform.GetComponent<Actor>();
-				if (hitActor == null)
+				if (hitActor == null /*&& hits[i].collider.isTrigger == false*/)
 				{
 					hasHitObstruction = true;
 					Quaternion effectRotation = new Quaternion();
@@ -129,7 +145,7 @@ public class GunInstance : WeaponInstance
 				}
 				else if (!hasHitObstruction)
 				{
-					hitActor.TakeDamage (gun.damage * Mathf.Max(1f - i * 0.2f, 0f), player);
+					hitActor.TakeDamage (gun.damage * Mathf.Max(1f - (i - triggerColliderCount) * 0.2f, 0f), player);
 					player.Points += 10;
 				}
 
@@ -139,6 +155,15 @@ public class GunInstance : WeaponInstance
 		anim.Play ();
 		}
 		return bulletsShot;
+	}
+
+	/// <summary>
+	/// Adds the specified number of bullets to this GunInstance's extraAmmo, but extraAmmo will not exceed (magazineSize * maxExtraMags)
+	/// </summary>
+	/// <param name="bullets">Number of bullets to be added</param>
+	public void AddAmmo (int bullets)
+	{
+		ExtraAmmo += bullets;
 	}
 
 	void OnPauseStateChange (bool newState)
@@ -175,6 +200,10 @@ public class GunInstance : WeaponInstance
 		{
 			Debug.LogError ("No PauseHandler found by " + gameObject.name);
 		}
+		if (graphic == null)
+		{
+			graphic = GetComponentInChildren<Renderer>().transform;
+		}
 
 		SetFireType ();
 
@@ -184,23 +213,22 @@ public class GunInstance : WeaponInstance
 		if (!hasInitialized)
 		{
 			magazineSize = gun.magazineSize;
-			maxExtraMags = gun.maxExtraMags;
 			BulletsInMag = magazineSize;
-			excessAmmo = maxExtraMags * magazineSize;
+			extraAmmo = gun.InitialExtraAmmo;
 		}
 
 	}
 
 	public override void OnTerminate()
 	{
-		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
+		pauseHandler.UnregisterPauseStateChange (OnPauseStateChange);
 		if (player == null || input == null || weapHandler == null)	{ 	return;		}
 		UnregisterCallbacks ();
 	}
 
 	void RegisterCallbacks ()
 	{
-		input.RegisterInputShoot (fireType.OnInputShoot);
+		input.RegisterInputShoot (OnInputShoot);
 		input.RegisterInputReload (OnInputReload);
 		input.RegisterInputAim (OnInputAim);
 		input.RegisterInputNotAim (OnInputNotAim);
@@ -208,7 +236,7 @@ public class GunInstance : WeaponInstance
 
 	void UnregisterCallbacks ()
 	{
-		input.UnregisterInputShoot (fireType.OnInputShoot);
+		input.UnregisterInputShoot (OnInputShoot);
 		input.UnregisterInputReload (OnInputReload);
 		input.UnregisterInputAim (OnInputAim);
 		input.UnregisterInputNotAim (OnInputNotAim);
@@ -258,6 +286,9 @@ public class GunInstance : WeaponInstance
 		}
 	}
 
+	/// <summary>
+	/// Calls the cbBulletCountchange callback with this GunInstance as the parameter. Call this anytime 
+	/// </summary>
 	private void OnBulletCountChange()
 	{
 		if(cbBulletCountChange != null)
