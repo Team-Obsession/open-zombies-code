@@ -9,7 +9,7 @@ public class GunInstance : WeaponInstance
 	public Transform aimPoint;
 	public GameObject shootPoint;
 	public GameObject hitPrefab;
-	public Animation anim;
+	public Animator anim;
 
 	PauseHandler pauseHandler;
 	Gun gun;
@@ -69,10 +69,11 @@ public class GunInstance : WeaponInstance
 
 	void OnInputReload (float timeHeld)
 	{
-		if (timeHeld == 0f)
+		if (timeHeld == 0f && BulletsInMag != magazineSize && ExtraAmmo != 0)
 		{
 			reloading = true;
 			StartCoroutine (Extensions.CallAfterSeconds(Reload, gun.reloadSpeed));
+			anim.SetTrigger ("Reload");
 		}
 	}
 
@@ -148,8 +149,7 @@ public class GunInstance : WeaponInstance
 		BulletsInMag -= bulletsShot;
 		if (bulletsShot > 0)
 		{
-			anim.Stop ();
-			anim.Play ();
+			anim.SetTrigger ("Fire");
 		}
 		return bulletsShot;
 	}
@@ -189,7 +189,7 @@ public class GunInstance : WeaponInstance
 		{
 			Debug.LogError (gameObject.name + " couldn't find an input from its player");
 		}
-		if(anim == null && ((anim = GetComponent<Animation>()) == null))
+		if(anim == null && ((anim = GetComponentInChildren<Animator>()) == null))
 		{
 			Debug.LogError ("No Animation Component on " + gameObject.name);
 		}
