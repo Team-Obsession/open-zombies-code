@@ -61,6 +61,7 @@ public class PlayerHUDHandler : HUDRelatedScript
 
 	public override void OnTerminate ()
 	{
+		if (PauseHandler.Instance == null) {	return;		}
 		PauseHandler.Instance.UnregisterPauseStateChange (OnPauseStateChange);
 	}
 
