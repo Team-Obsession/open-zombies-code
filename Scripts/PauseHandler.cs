@@ -14,7 +14,7 @@ public class PauseHandler : MonoBehaviour
 				pauseHandler = FindObjectOfType (typeof(PauseHandler)) as PauseHandler;
 				if (!pauseHandler)
 				{
-					Debug.LogError ("There must be one and only one PauseHandler in the scene");
+					Debug.LogError ("There is not a PauseHandler in the scene");
 				}
 			}
 			return pauseHandler;
