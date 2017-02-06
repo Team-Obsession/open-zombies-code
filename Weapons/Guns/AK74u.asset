@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45507a422a810f4e8022f0a9199b84a, type: 3}
+  m_Name: AK74u
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 100000, guid: c45c835c696a4d845b21288a9ca1c59f, type: 3}
+  weaponType: 0
+  weaponName: AK74u
+  movementScalar: 0.2
+  fireRate: 480
+  reloadSpeed: 1
+  damage: 50
+  aimTime: 1
+  fireType: 0
+  magazineSize: 10
+  defaultExtraMags: 3
+  maxExtraMags: 10
+  bulletsPerShot: 1
+  aimAccuracy: 0
+  hipAccuracy: 30
