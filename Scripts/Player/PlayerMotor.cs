@@ -70,7 +70,7 @@ public class PlayerMotor : PlayerRelatedScript
 
 	void OnInputSprint (float timeHeld)
 	{
-		realSprintScalar = Mathf.Lerp (1, player.sprintScalar, Mathf.Clamp (timeHeld * 3f, 0, 1));
+		realSprintScalar = Mathf.Lerp (1, player.sprintScalar, Mathf.Clamp (timeHeld * 5f, 0, 1));
 	}
 
 	void OnInputWalk (float timeHeld)
@@ -120,7 +120,7 @@ public class PlayerMotor : PlayerRelatedScript
 		grounded = GroundedCapsuleCast ();
 	}
 
-	public override void OnInitialize() //initialization
+	protected override void OnInitialize() //initialization
 	{
 		if(player == null && ((player = GetComponent<LocalPlayer>()) == null))
 		{
@@ -157,7 +157,7 @@ public class PlayerMotor : PlayerRelatedScript
 	}
 
 
-	public override void OnTerminate ()
+	protected override void OnTerminate ()
 	{
 		UnregisterCallbacks ();
 		pauseHandler.UnregisterPauseStateChange (OnPauseStateChange);

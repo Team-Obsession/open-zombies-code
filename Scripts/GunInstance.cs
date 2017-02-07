@@ -9,13 +9,17 @@ public class GunInstance : WeaponInstance
 	public Transform aimPoint;
 	public GameObject shootPoint;
 	public GameObject hitPrefab;
-	public Animation anim;
+
+	[HideInInspector]
+	public Animator anim;
 
 	PauseHandler pauseHandler;
 	Gun gun;
 	IShootable fireType;
 
-	private int magazineSize, maxExtraMags, bulletsInMag, excessAmmo;
+	private int magazineSize, bulletsInMag, extraAmmo;
+	private float currentAccuracy = 0f;
+	private bool reloading = false, cocking = false;
 
 
 	public int BulletsInMag
@@ -33,13 +37,19 @@ public class GunInstance : WeaponInstance
 
 	public int ExtraAmmo
 	{
-		get		{	return excessAmmo;	}
+		get	{	 return extraAmmo;	 }
+		protected set
+		{
+			if (value != extraAmmo)
+			{
+				extraAmmo = Mathf.Min (value, gun.MaxExtraAmmo);
+				OnBulletCountChange ();
+			}
+		}
 	}
 
-	public int MaxAmmo
-	{
-		get		{	return maxExtraMags * (magazineSize + 1);	}
-	}
+
+
 
 	/**
 	*	look in fireType for the handling of shoot input
@@ -47,22 +57,39 @@ public class GunInstance : WeaponInstance
 
 	void OnInputAim (float timeHeld)
 	{
+		currentAccuracy = Mathf.Lerp (currentAccuracy, gun.aimAccuracy, timeHeld / gun.aimTime);
 		graphic.position = Vector3.Lerp (graphic.position, aimPoint.position, timeHeld / gun.aimTime);
 		graphic.rotation = Quaternion.Lerp (graphic.rotation, aimPoint.rotation, timeHeld / gun.aimTime);
 	}
 
 	void OnInputNotAim (float timeHeld)
 	{
+		currentAccuracy = Mathf.Lerp (currentAccuracy, gun.hipAccuracy, timeHeld / gun.aimTime);
 		graphic.position = Vector3.Lerp (graphic.position, hipPoint.position, timeHeld / gun.aimTime);
 		graphic.rotation = Quaternion.Lerp (graphic.rotation, hipPoint.rotation, timeHeld / gun.aimTime);
 	}
 
 	void OnInputReload (float timeHeld)
 	{
-		if (timeHeld == 0f)
+		if (timeHeld == 0f && BulletsInMag != magazineSize && ExtraAmmo != 0)
 		{
-			Reload ();
+			reloading = true;
+			StartCoroutine (Extensions.CallAfterSeconds(Reload, gun.reloadSpeed));
+			anim.SetTrigger ("Reload");
 		}
+	}
+
+	void OnInputShoot (float timeHeld)
+	{
+		if (reloading)		{		return;		}
+		//Check to see if we can shoot
+		if (BulletsInMag == 0)
+		{
+			OnInputReload (timeHeld);
+			return;
+		}
+		//Shoot according to our FireType
+		fireType.OnInputShoot (timeHeld);
 	}
 
 	/// <summary>
@@ -70,23 +97,13 @@ public class GunInstance : WeaponInstance
 	/// </summary>
 	public void Reload()
 	{
-		if(BulletsInMag == magazineSize)
+		if (ExtraAmmo > 0)
 		{
-			return;
+			int bulletsReloaded = ExtraAmmo < magazineSize - BulletsInMag ? ExtraAmmo : magazineSize - bulletsInMag;
+			ExtraAmmo -= bulletsReloaded;
+			BulletsInMag += bulletsReloaded;
 		}
-		if(excessAmmo > 0)
-		{
-			if(excessAmmo >= magazineSize - BulletsInMag)
-			{
-				excessAmmo -= magazineSize - BulletsInMag;
-				BulletsInMag = magazineSize;
-			}
-			else
-			{
-				BulletsInMag = excessAmmo;
-				excessAmmo = 0;
-			}
-		}
+		reloading = false;
 		OnReload();
 	}
 
@@ -95,50 +112,57 @@ public class GunInstance : WeaponInstance
 	/// Returns the actual number of bullets shot.
 	/// </summary>
 	/// <param name="numBullets">Number bullets.</param>
-	public int Shoot (int numBullets)
+	public int Shoot ( int numBullets )
 	{
-		int bulletsShot = 0;
-		if (BulletsInMag > 0)
-		{
-			if(BulletsInMag >= numBullets)
-			{
-				BulletsInMag -= numBullets;
-				bulletsShot = numBullets;
-			}
-			else
-			{
-				BulletsInMag = 0;
-				bulletsShot = numBullets - BulletsInMag;
-			}
+		int bulletsShot = Mathf.Min (BulletsInMag, numBullets);
 		RaycastHit[] hits;
-		hits = Physics.RaycastAll (new Ray (player.cam.transform.position, player.cam.transform.forward));
-		if (hits.Length != 0)
+		for (int j = 0; j < bulletsShot * gun.bulletsPerShot; j++)
 		{
-			//Sort by distance (squared distance, that is)
-			Array.Sort(hits, Extensions.CompareRayCastHitByDistance);
-			bool hasHitObstruction = false;
-			for (int i = 0; i < hits.Length; i++)
+			hits = Physics.RaycastAll (Extensions.RotateRay (player.cam.transform, UnityEngine.Random.value * currentAccuracy, UnityEngine.Random.value * 360f));
+			if (hits.Length != 0)
 			{
-				Actor hitActor = hits[i].transform.GetComponent<Actor>();
-				if (hitActor == null)
+				//Sort by distance (squared distance, that is)
+				Array.Sort (hits, Extensions.CompareRayCastHitByDistance);
+				bool hasHitObstruction = false;
+				int triggerColliderCount = 0;
+				for (int i = 0; i < hits.Length; i++)
 				{
-					hasHitObstruction = true;
-					Quaternion effectRotation = new Quaternion();
-					effectRotation.SetLookRotation (hits[i].normal);
-					Instantiate (hitPrefab, hits[i].point, effectRotation);
+					if (hits [i].collider.isTrigger)
+					{
+						triggerColliderCount++;
+						continue;
+					}
+					Actor hitActor = hits [i].transform.GetComponent<Actor> ();
+					if (hitActor == null /*&& hits[i].collider.isTrigger == false*/)
+					{
+						hasHitObstruction = true;
+						Quaternion effectRotation = new Quaternion ();
+						effectRotation.SetLookRotation (hits [i].normal);
+						Instantiate (hitPrefab, hits [i].point, effectRotation);
+					}
+					else if (!hasHitObstruction)
+					{
+						hitActor.TakeDamage (gun.damage * Mathf.Max (1f - (i - triggerColliderCount) * 0.2f, 0f), player);
+						player.Points += 10;
+					}
 				}
-				else if (!hasHitObstruction)
-				{
-					hitActor.TakeDamage (gun.damage * Mathf.Max(1f - i * 0.2f, 0f), player);
-					player.Points += 10;
-				}
-
 			}
 		}
-		anim.Stop ();
-		anim.Play ();
+		BulletsInMag -= bulletsShot;
+		if (bulletsShot > 0)
+		{
+			anim.SetTrigger ("Fire");
 		}
 		return bulletsShot;
+	}
+
+	/// <summary>
+	/// Adds the specified number of bullets to this GunInstance's extraAmmo, but extraAmmo will not exceed (magazineSize * maxExtraMags)
+	/// </summary>
+	/// <param name="bullets">Number of bullets to be added</param>
+	public void AddAmmo (int bullets)
+	{
+		ExtraAmmo += bullets;
 	}
 
 	void OnPauseStateChange (bool newState)
@@ -167,13 +191,17 @@ public class GunInstance : WeaponInstance
 		{
 			Debug.LogError (gameObject.name + " couldn't find an input from its player");
 		}
-		if(anim == null && ((anim = GetComponent<Animation>()) == null))
+		if(anim == null && ((anim = GetComponentInChildren<Animator>()) == null))
 		{
 			Debug.LogError ("No Animation Component on " + gameObject.name);
 		}
 		if(pauseHandler == null && ((pauseHandler = PauseHandler.Instance) == null))
 		{
 			Debug.LogError ("No PauseHandler found by " + gameObject.name);
+		}
+		if (graphic == null)
+		{
+			graphic = GetComponentInChildren<Renderer>().transform;
 		}
 
 		SetFireType ();
@@ -184,23 +212,23 @@ public class GunInstance : WeaponInstance
 		if (!hasInitialized)
 		{
 			magazineSize = gun.magazineSize;
-			maxExtraMags = gun.maxExtraMags;
 			BulletsInMag = magazineSize;
-			excessAmmo = maxExtraMags * magazineSize;
+			extraAmmo = gun.InitialExtraAmmo;
+			currentAccuracy = gun.hipAccuracy;
 		}
 
 	}
 
 	public override void OnTerminate()
 	{
-		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
+		pauseHandler.UnregisterPauseStateChange (OnPauseStateChange);
 		if (player == null || input == null || weapHandler == null)	{ 	return;		}
 		UnregisterCallbacks ();
 	}
 
 	void RegisterCallbacks ()
 	{
-		input.RegisterInputShoot (fireType.OnInputShoot);
+		input.RegisterInputShoot (OnInputShoot);
 		input.RegisterInputReload (OnInputReload);
 		input.RegisterInputAim (OnInputAim);
 		input.RegisterInputNotAim (OnInputNotAim);
@@ -208,7 +236,7 @@ public class GunInstance : WeaponInstance
 
 	void UnregisterCallbacks ()
 	{
-		input.UnregisterInputShoot (fireType.OnInputShoot);
+		input.UnregisterInputShoot (OnInputShoot);
 		input.UnregisterInputReload (OnInputReload);
 		input.UnregisterInputAim (OnInputAim);
 		input.UnregisterInputNotAim (OnInputNotAim);
@@ -258,6 +286,9 @@ public class GunInstance : WeaponInstance
 		}
 	}
 
+	/// <summary>
+	/// Calls the cbBulletCountchange callback with this GunInstance as the parameter. Call this anytime 
+	/// </summary>
 	private void OnBulletCountChange()
 	{
 		if(cbBulletCountChange != null)

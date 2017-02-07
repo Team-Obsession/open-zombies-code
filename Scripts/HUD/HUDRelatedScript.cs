@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerRelatedScript : MonoBehaviour
+public class HUDRelatedScript : MonoBehaviour
 {
-	public GameController gc;
-
+	protected HUDHandler handler;
 
 	private bool hasInitialized = false;
 
-	public void Awake ()
+	public void Awake()
 	{
-		gc = GameController.Instance ();
-		gc.RegisterInitialize (this);	
+		handler = HUDHandler.Instance;
+		handler.RegisterInitialize (this);
 	}
 
 	public virtual void OnInitialize () {}
@@ -25,7 +24,7 @@ public class PlayerRelatedScript : MonoBehaviour
 
 	public void Terminate ()
 	{
-		OnTerminate ();
+		OnTerminate();
 		hasInitialized = false;
 	}
 
@@ -40,5 +39,10 @@ public class PlayerRelatedScript : MonoBehaviour
 		if (!hasInitialized)	{	return;		}
 		Terminate ();
 	}
-	
+
 }
+
+
+
+
+

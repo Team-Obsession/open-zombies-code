@@ -55,7 +55,7 @@ public class CountLines: EditorWindow
  
 		strStats = new System.Text.StringBuilder();
 		strStats.Append("Number of Files: " + stats.Count + "\n");		
-		strStats.Append("Number of Lines: " + iTotalNbLines + "\n");	
+		strStats.Append("Number of Lines, excluding white space and brackets: " + iTotalNbLines + "\n");
 		strStats.Append("================\n");	
  
 		foreach(File f in stats)
@@ -79,13 +79,15 @@ public class CountLines: EditorWindow
             ProcessDirectory(stats, strSubDir);
 	}
  
-	static void ProcessFile(ArrayList stats, string filename)
+	static void ProcessFile (ArrayList stats, string filename)
 	{
-        System.IO.StreamReader reader = System.IO.File.OpenText(filename);
+        System.IO.StreamReader reader = System.IO.File.OpenText (filename);
         int iLineCount = 0;
         while (reader.Peek() >= 0)
         {
-            reader.ReadLine();
+            string tLine = reader.ReadLine().Trim ();
+            if (tLine.Equals ("{") || tLine.Equals ("}") || tLine.Equals ("") || tLine.StartsWith ("//"))
+            	continue;
             ++iLineCount;
         }
 		stats.Add(new File(filename, iLineCount));

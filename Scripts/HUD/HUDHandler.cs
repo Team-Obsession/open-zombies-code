@@ -40,6 +40,7 @@ public class HUDHandler : PlayerRelatedScript
 				menu.SetActive (true);
 				hud.ActiveMenu = menu;
 			}
+			else if (menu == playerHUDs[player].defaultMenu){}
 			else
 			{
 				menu.SetActive (false);
@@ -64,7 +65,7 @@ public class HUDHandler : PlayerRelatedScript
 		}
 	}
 
-	public override void OnInitialize ()
+	protected override void OnInitialize ()
 	{
 		playerHUDs = new Dictionary <Player, HUD> ();
 		playerHUDHandlers = new Dictionary <Player, PlayerHUDHandler> ();

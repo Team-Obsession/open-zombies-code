@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,7 +7,14 @@ public static class Extensions
 {
 	public static T GetRandomElement<T> (this T[] array)
 	{
-		return array[Random.Range (0, array.Length - 1)];
+		return array[UnityEngine.Random.Range (0, array.Length)];
+	}
+
+	public static T GetRandomElement<T> ( this List<T> list )
+	{
+		if (list.Count == 0)	{	return default (T);	}
+		int rand = UnityEngine.Random.Range (0, list.Count);
+		return list[rand];
 	}
 
 	public static Transform ClosestOf (this Transform reference, List<Transform> prospects)
@@ -93,14 +101,43 @@ public static class Extensions
 		return output;
 	}
 
+	/// <summary>
+	/// Deprecated?
+	/// </summary>
+	/// <param name="seconds">timer</param>
 	static public  IEnumerator WaitForSeconds (float seconds)
 	{
 		yield return new WaitForSeconds (seconds);
 	}
 
+	static public IEnumerator CallAfterSeconds (Action action, float timer)
+	{
+		if (action == null)
+		{
+			Debug.LogError ("Action " + action + " is empty");
+			yield break;
+		}
+		yield return new WaitForSeconds (timer);
+		action ();
+	}
+
 	static public  IEnumerator WaitFrame ()
 	{
 		yield return new WaitForEndOfFrame ();
+	}
+
+	/// <summary>
+	/// Compute a Ray which has some angular difference from an input Transform
+	/// </summary>
+	/// <returns>A new ray whose base is input.position, and points degAway degrees away from input.up and is rotated
+	/// degForward degrees around input.forward</returns>
+	/// <param name="input">The input Transform</param>
+	/// <param name="degAway">The number of degrees between the output Ray around input's forward vector</param>
+	/// <param name="degForward">The number of degrees between the output Ray around input's forward vector</param>
+	public static Ray RotateRay (this Transform input, float degAway, float degForward)
+	{
+		Quaternion rotation = input.transform.rotation * Quaternion.Euler (0f, 0f, degForward) * Quaternion.Euler (0f, degAway, 0f);
+		return new Ray (input.position, rotation * Vector3.forward);
 	}
 	
 }

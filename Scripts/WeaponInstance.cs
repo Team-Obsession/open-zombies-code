@@ -3,11 +3,16 @@ using System.Collections;
 
 public class WeaponInstance : MonoBehaviour
 {
+	[HideInInspector]
 	public LocalPlayer player;
+	[HideInInspector]
 	public PlayerWeaponHandler weapHandler;
+	[HideInInspector]
 	public PlayerInput input;
-	public Weapon weapon;
+	[HideInInspector]
 	public bool hasInitialized = false;
+
+	public Weapon weapon;
 
 	public virtual void OnInitialize () {}
 	public virtual void OnTerminate () {}

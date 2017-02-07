@@ -9,20 +9,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a45507a422a810f4e8022f0a9199b84a, type: 3}
-  m_Name: Galil
+  m_Name: AK74u
   m_EditorClassIdentifier: 
-  prefab: {fileID: 1000013610798930, guid: 89f1e5c2efd1cb642aee182b267e5166, type: 2}
+  prefab: {fileID: 1833770681234028, guid: 74a568ae5e759fd4aaf523370dc5f9a5, type: 2}
   weaponType: 0
-  weaponName: Galil
-  movementScalar: 0.9
-  fireRate: 720
-  reloadSpeed: 0.6
-  damage: 150
-  aimTime: 0.25
+  weaponName: AK74u
+  movementScalar: 0.95
+  fireRate: 960
+  reloadSpeed: 2
+  damage: 100
+  aimTime: 0.2
   fireType: 0
   magazineSize: 30
   defaultExtraMags: 3
   maxExtraMags: 6
   bulletsPerShot: 1
   aimAccuracy: 0
-  hipAccuracy: 15
+  hipAccuracy: 12.5

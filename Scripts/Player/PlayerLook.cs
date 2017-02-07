@@ -17,6 +17,9 @@ public class PlayerLook : MonoBehaviour
 	{
 		player = GetComponentInParent<Player>();
 		input = GetComponentInParent<PlayerInput>();
+		input.RegisterInputLook (OnInputLook);
+		pauseHandler = PauseHandler.Instance;
+		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
 	}
 
 	void OnInputLook(Vector2 lookVector)
@@ -43,9 +46,7 @@ public class PlayerLook : MonoBehaviour
 
 	void OnEnable()
 	{
-		input.RegisterInputLook (OnInputLook);
-		pauseHandler = PauseHandler.Instance;
-		pauseHandler.RegisterPauseStateChange (OnPauseStateChange);
+		
 	}
 
 	void OnDisable()
