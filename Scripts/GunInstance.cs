@@ -71,6 +71,7 @@ public class GunInstance : WeaponInstance
 
 	void OnInputReload (float timeHeld)
 	{
+		if (reloading == true)	{	return;		}
 		if (timeHeld == 0f && BulletsInMag != magazineSize && ExtraAmmo != 0)
 		{
 			reloading = true;
