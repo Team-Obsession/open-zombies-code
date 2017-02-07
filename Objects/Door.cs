@@ -23,6 +23,7 @@ public class Door : Interactable
 		IsSatisfied = true;
 		candidate.Points -= cost;
 		OnInteract (candidate);
+		OnInteractableUpdate ();
 		return true;
 	}
 

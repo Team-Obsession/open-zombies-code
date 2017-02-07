@@ -36,10 +36,14 @@ public abstract class Interactable : Prerequisite
 	//TODO: send out network event when player successfully interacts with an Interactable
 	public void OnInteract (Player interactPlayer)
 	{
-		if (cbInteract != null)
-		{
+		if (cbInteract == null)	{	return;	}
 			cbInteract (interactPlayer, this);
-		}
+	}
+
+	public void OnInteractableUpdate ()
+	{
+		if (cbUpdate == null)	{	return;	}
+		cbUpdate (this);
 	}
 
 	void OnTriggerEnter (Collider other)
@@ -71,6 +75,7 @@ public abstract class Interactable : Prerequisite
 	*/
 
 	private Action<Player, Interactable> cbInteract;
+	private Action<Interactable> cbUpdate;
 
 	public void RegisterInteract (Action<Player, Interactable> callbackFunc)
 	{
@@ -81,6 +86,14 @@ public abstract class Interactable : Prerequisite
 		cbInteract -= callbackFunc;
 	}
 
+	public void RegisterUpdate (Action<Interactable> callbackFunc)
+	{
+		cbUpdate += callbackFunc;
+	}
+	public void UnregisterUpdate (Action<Interactable> callbackFunc)
+	{
+		cbUpdate -= callbackFunc;
+	}
 }
 
 

@@ -33,12 +33,14 @@ public class PlayerInteractHandler : PlayerRelatedScript
 	{
 		interactCandidates.Insert (0, obj);
 		OnInteractableEnter (obj);
+		obj.RegisterUpdate (OnInteractableUpdate);
 	}
 
 	public void InteractableExit (Interactable obj)
 	{
 		interactCandidates.Remove (obj);
 		OnInteractableExit (obj);
+		obj.UnregisterUpdate (OnInteractableUpdate);
 	}
 
 	void OnInputInteract (float timeHeld)
@@ -60,6 +62,14 @@ public class PlayerInteractHandler : PlayerRelatedScript
 	{
 		if (cbInteractableExit == null) {	return;		}
 		cbInteractableExit (obj);
+	}
+
+	void OnInteractableUpdate (Interactable obj)
+	{
+		if (!obj.enabled || !obj.gameObject.activeInHierarchy)
+		{
+			OnInteractableExit (obj);
+		}
 	}
 
 	void OnInteract (Interactable obj)
