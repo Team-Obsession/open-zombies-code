@@ -11,6 +11,7 @@ public class HUDAmmoUpdate : HUDRelatedScript
 
 	void OnAmmoUpdate (WeaponInstance weapon)
 	{
+		if (weapon != currentWeapon)	{	return;		}
 		switch (weapon.weapon.weaponType)
 		{
 			case WeaponType.Gun :
