@@ -11,18 +11,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a45507a422a810f4e8022f0a9199b84a, type: 3}
   m_Name: AK74u
   m_EditorClassIdentifier: 
-  prefab: {fileID: 100000, guid: c45c835c696a4d845b21288a9ca1c59f, type: 3}
+  prefab: {fileID: 1833770681234028, guid: 74a568ae5e759fd4aaf523370dc5f9a5, type: 2}
   weaponType: 0
   weaponName: AK74u
-  movementScalar: 0.2
-  fireRate: 480
-  reloadSpeed: 1
-  damage: 50
-  aimTime: 1
+  movementScalar: 0.95
+  fireRate: 960
+  reloadSpeed: 2
+  damage: 100
+  aimTime: 0.2
   fireType: 0
-  magazineSize: 10
+  magazineSize: 30
   defaultExtraMags: 3
-  maxExtraMags: 10
+  maxExtraMags: 6
   bulletsPerShot: 1
   aimAccuracy: 0
-  hipAccuracy: 30
+  hipAccuracy: 12.5

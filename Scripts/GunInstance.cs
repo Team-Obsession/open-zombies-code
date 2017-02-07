@@ -9,6 +9,8 @@ public class GunInstance : WeaponInstance
 	public Transform aimPoint;
 	public GameObject shootPoint;
 	public GameObject hitPrefab;
+
+	[HideInInspector]
 	public Animator anim;
 
 	PauseHandler pauseHandler;
@@ -116,7 +118,7 @@ public class GunInstance : WeaponInstance
 		RaycastHit[] hits;
 		for (int j = 0; j < bulletsShot * gun.bulletsPerShot; j++)
 		{
-			hits = Physics.RaycastAll (new Ray (player.cam.transform.position, player.cam.transform.forward)/*Extensions.RotateRay (player.cam.transform, UnityEngine.Random.value * currentAccuracy, UnityEngine.Random.value * 360f)*/);
+			hits = Physics.RaycastAll (Extensions.RotateRay (player.cam.transform, UnityEngine.Random.value * currentAccuracy, UnityEngine.Random.value * 360f));
 			if (hits.Length != 0)
 			{
 				//Sort by distance (squared distance, that is)

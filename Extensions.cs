@@ -129,22 +129,15 @@ public static class Extensions
 	/// <summary>
 	/// Compute a Ray which has some angular difference from an input Transform
 	/// </summary>
-	/// <returns>A new ray whose base is input.position, and points degUp degrees away from input.forward and is rotated
+	/// <returns>A new ray whose base is input.position, and points degAway degrees away from input.up and is rotated
 	/// degForward degrees around input.forward</returns>
 	/// <param name="input">The input Transform</param>
-	/// <param name="degUp">The number of degrees between the output Ray around input's up vector</param>
+	/// <param name="degAway">The number of degrees between the output Ray around input's forward vector</param>
 	/// <param name="degForward">The number of degrees between the output Ray around input's forward vector</param>
-	public static Ray RotateRay (this Transform input, float degUp, float degForward)
+	public static Ray RotateRay (this Transform input, float degAway, float degForward)
 	{
-		//FIXME: A hack solution. Change to not mutate input without being a performance hog.
-		Quaternion copy = new Quaternion (input.rotation.w, input.rotation.x, input.rotation.y, input.rotation.z);
-		input.RotateAround (input.position, input.up, degUp);
-		input.RotateAround (input.position, input.forward, degForward);
-		Ray result = new Ray (input.position, input.forward);
-		input.rotation = copy;
-		input.Rotate (Vector3.zero);
-		return result;
-
+		Quaternion rotation = input.transform.rotation * Quaternion.Euler (0f, 0f, degForward) * Quaternion.Euler (0f, degAway, 0f);
+		return new Ray (input.position, rotation * Vector3.forward);
 	}
 	
 }

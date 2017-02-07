@@ -18,12 +18,11 @@ MonoBehaviour:
   fireRate: 720
   reloadSpeed: 0.6
   damage: 150
+  aimTime: 0.25
   fireType: 0
   magazineSize: 30
   defaultExtraMags: 3
   maxExtraMags: 6
   bulletsPerShot: 1
-  aimTime: 0.2
   aimAccuracy: 0
-  hipAccuracy: 30
-  moveAccuracy: 45
+  hipAccuracy: 15
