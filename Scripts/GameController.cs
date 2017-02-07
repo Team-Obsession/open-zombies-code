@@ -23,6 +23,7 @@ public class GameController : MonoBehaviour
 
 	//Variables to be set in the Editor
 	public int numLocalPlayers = 1;
+	public int startingPoints = 500;
 	public float roundStartDelay = 5f;
 	/// <summary>
 	/// The minimum amount of time that will pass after a zombie
@@ -124,6 +125,7 @@ public class GameController : MonoBehaviour
 			localPlayers.Add (playerGameObjects [i].AddComponent<LocalPlayer> ());
 			localPlayers [i].prefab = playerPrefab;
 			localPlayers [i].playerIndex = i + 1;
+			localPlayers [i].Points = startingPoints;
 			if (i == 0)
 			{
 				localPlayers [i].cam.gameObject.AddComponent<AudioListener> ();
