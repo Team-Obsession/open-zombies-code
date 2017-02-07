@@ -29,7 +29,7 @@ public class Door : Interactable
 
 	public override string InteractText (Player candidate)
 	{
-		return interactText;
+		return interactText +  " (" + cost + " points)";
 	}
 
 
