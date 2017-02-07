@@ -38,7 +38,7 @@ public class PlayerWeaponHandler : PlayerRelatedScript
 		WeaponInstance result = null;
 		foreach (WeaponInstance weapInst in weaponInstances)
 		{
-			result = weapInst != null ? (weapInst.weapon == weap ? weapInst : result) : null;
+			result = weapInst != null ? (weapInst.weapon == weap ? weapInst : result) : result;
 		}
 		return result;
 	}
