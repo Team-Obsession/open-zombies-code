@@ -16,7 +16,7 @@ MonoBehaviour:
   weaponName: SAP-6
   movementScalar: 0.95
   fireRate: 90
-  reloadSpeed: 8
+  reloadSpeed: 2
   damage: 35
   aimTime: 1
   fireType: 2
