@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a45507a422a810f4e8022f0a9199b84a, type: 3}
+  m_Name: SAP-6
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 1602668872203080, guid: 94dd35fdd761f474da797aa2f587be2a, type: 2}
+  weaponType: 0
+  weaponName: SAP-6
+  movementScalar: 0.95
+  fireRate: 90
+  reloadSpeed: 8
+  damage: 35
+  aimTime: 1
+  fireType: 2
+  magazineSize: 11
+  defaultExtraMags: 3
+  maxExtraMags: 10
+  bulletsPerShot: 1
+  multiShot: 8
+  aimAccuracy: 5
+  hipAccuracy: 10

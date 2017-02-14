@@ -117,7 +117,7 @@ public class GunInstance : WeaponInstance
 	{
 		int bulletsShot = Mathf.Min (BulletsInMag, numBullets);
 		RaycastHit[] hits;
-		for (int j = 0; j < bulletsShot * gun.bulletsPerShot; j++)
+		for (int j = 0; j < bulletsShot * gun.multiShot; j++)
 		{
 			hits = Physics.RaycastAll (Extensions.RotateRay (player.cam.transform, UnityEngine.Random.value * currentAccuracy, UnityEngine.Random.value * 360f));
 			if (hits.Length != 0)
