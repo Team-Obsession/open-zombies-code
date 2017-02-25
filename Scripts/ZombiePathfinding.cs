@@ -9,36 +9,10 @@ public class ZombiePathfinding : MonoBehaviour
 	public NavMeshAgent navAgent;
 	public float stopTime = 1f;
 
-	float stoppingDistance = 1f;
-
-	void Start()
-	{
-		if(zombie == null)
-		{
-			zombie = GetComponent<Zombie> ();
-			if(zombie == null)
-			{
-				Debug.LogError ("Some zombie GameObject doesn't have a Zombie component");
-			}
-		}
-		if(navAgent == null)
-		{
-			navAgent = GetComponent<NavMeshAgent>();
-			if(navAgent == null)
-			{
-				Debug.LogError ("Some zombie GameObject doesn't have a NavMeshAgent component");
-			}
-		}
-		zombie.RegisterTargetChange (OnTargetChange);
-		zombie.GetTarget ();
-		OnTargetChange ();
-
-	}
-
-	void OnCollisionEnter(Collision col)
+	void OnCollisionEnter (Collision col)
 	{
 		Player player = col.gameObject.GetComponent<Player>();
-		if(player != null) //we hit a player
+		if (player != null) //we hit a player
 		{
 			player.TakeDamage (50f, zombie);
 		}
@@ -46,14 +20,39 @@ public class ZombiePathfinding : MonoBehaviour
 
 	void OnTargetChange()
 	{
-		stoppingDistance = 1.1f * (zombie.Target.GetComponent<CapsuleCollider>().radius + zombie.GetComponent<CapsuleCollider>().radius);
-		navAgent.stoppingDistance = stoppingDistance;
+		//Do stuff here
+	}
+
+	void OnSpeedChange (float newSpeed)
+	{
+		navAgent.speed = newSpeed;
 	}
 
 	void Update()
 	{
-		navAgent.destination = zombie.Target.transform.position;
+		navAgent.destination = zombie.Target.position;
+	}
 
+	void Start()
+	{
+		if (zombie == null && ((zombie = GetComponent<Zombie>()) == null))
+		{
+			Debug.LogError (gameObject.name + " couldn't find a Zombie component");
+		}
+		if (navAgent == null && ((navAgent = GetComponent<NavMeshAgent>()) == null))
+		{
+			Debug.LogError (gameObject.name + " couldn't find a NavMeshAgent component");
+		}
+		zombie.GetTarget ();
+		OnSpeedChange (zombie.MinSpeed);
+		OnTargetChange ();
+
+	}
+
+	void RegisterCallbacks ()
+	{
+		zombie.RegisterTargetChange (OnTargetChange);
+		zombie.RegisterMoveSpeedChange (OnSpeedChange);
 	}
 
 	public Vector3 StoppingPoint (Vector3 from, Vector3 to, float distance)
@@ -61,8 +60,6 @@ public class ZombiePathfinding : MonoBehaviour
 		Vector3 direction = (to - from).normalized;
 		return from + (direction * distance);
 	}
-
-
 
 }
 

@@ -5,64 +5,126 @@ using System.Collections.Generic;
 
 public abstract class Prerequisite : MonoBehaviour
 {
-	private bool isSatisfied;
-	public bool IsSatisfied
+
+	private int satisfiedPrerequisites = 0;
+	public int SatisfiedPrequisites
 	{
-		get		{	return isSatisfied;	}
-		protected set
+		get	{	return satisfiedPrerequisites;	}
+		private set
 		{
-			if (value != isSatisfied)
+			if (satisfiedPrerequisites == value)	{	return;		}
+			if (value > prerequisites.Count)
 			{
-				isSatisfied = value;
-				OnSatisfied ();
+				Debug.LogError ("Prerequisite counter set above maximum\tvalue:" + value + "\tmax:" + prerequisites.Count);
+			}
+			else if (value < 0)
+			{
+				Debug.LogError ("Prerequisite counter set below zero\tvalue:" + value); 
+			}
+			else
+			{
+				satisfiedPrerequisites = value;
+				SatisfiedChanged ();
 			}
 		}
 	}
 
+	public bool IsSatisfied
+	{
+		get		{	return satisfiedPrerequisites == prerequisites.Count && SelfSatisfied;	}
+	}
+
+
 	[SerializeField]
 	private List<Prerequisite> prerequisites = new List<Prerequisite>();
-	public List<Prerequisite> Prerequisites
+	[SerializeField]
+	private bool selfSatisfied = true;
+	public bool  SelfSatisfied
 	{
-		get
+		get 	{	return selfSatisfied;	}
+		protected set
 		{
-			return new List<Prerequisite> (prerequisites);
+			if (selfSatisfied == value) {	return;		}
+			selfSatisfied = value;
+			SatisfiedChanged ();
 		}
 	}
 
-	void Start()
+	void OnEnable ()
 	{
-		if (PrerequisitesSatisfied ())
+		SatisfiedPrequisites = NumPrerequisitesSatisfied ();
+		RegisterPrequisiteCallbacks ();
+		if (IsSatisfied)
 		{
-			OnSatisfied ();
+			SatisfiedChanged ();
 		}
 	}
 
-	public bool PrerequisitesSatisfied ()
+	private void OnDisable()
 	{
-		if (prerequisites.Count == 0)	{	return true;	}
-		bool result = false;
+		UnregisterPrerequisiteCallbacks ();
+	}
+
+	private int NumPrerequisitesSatisfied ()
+	{
+		if (prerequisites.Count == 0)	{	return 0;	}
+		int result = 0;
 		foreach (Prerequisite p in prerequisites)
 		{
-			result = p.isSatisfied ? true : result;
+			result += p.IsSatisfied ? 1 : 0;
 		}
 		return result;
 	}
 
-	void OnSatisfied ()
+	private void SatisfiedChanged ()
 	{
-		if (cbSatisfied == null)	{	return;		}
-		cbSatisfied();
+		if (cbSatisfiedChange == null)	{	return;		}
+		cbSatisfiedChange (IsSatisfied);
 	}
 
-	private Action cbSatisfied;
-
-	public void RegisterSatisfied (Action callbackFunc)
+	private void OnSatisfiedChange (bool satisfied)
 	{
-		cbSatisfied += callbackFunc;
+		satisfiedPrerequisites += satisfied ? 1 : -1;
 	}
-	public void UnregisterSatisfied (Action callbackFunc)
+
+	protected void RegisterPrequisiteCallbacks ()
 	{
-		cbSatisfied -= callbackFunc;
+		foreach (Prerequisite p in prerequisites)
+		{
+			p.RegisterSatisfiedChange (OnSatisfiedChange);
+		}
+	}
+
+	protected void UnregisterPrerequisiteCallbacks ()
+	{
+		foreach (Prerequisite p in prerequisites)
+		{
+			p.UnregisterSatisfiedChange (OnSatisfiedChange);
+		}
+	}
+
+	private Action<bool> cbSatisfiedChange;
+
+	public void RegisterSatisfiedChange (Action<bool> callbackFunc)
+	{
+		cbSatisfiedChange += callbackFunc;
+	}
+	public void UnregisterSatisfiedChange (Action<bool> callbackFunc)
+	{
+		cbSatisfiedChange -= callbackFunc;
+	}
+
+	public void RegisterPrerequisite (Prerequisite requisite)
+	{
+		prerequisites.Add (requisite);
+		requisite.RegisterSatisfiedChange (OnSatisfiedChange);
+		SatisfiedPrequisites += requisite.IsSatisfied ? 1 : 0;
+	}
+	public void UnregisterPrerequisite (Prerequisite requisite)
+	{
+		prerequisites.Remove (requisite);
+		requisite.UnregisterSatisfiedChange (OnSatisfiedChange);
+		SatisfiedPrequisites--;
 	}
 
 

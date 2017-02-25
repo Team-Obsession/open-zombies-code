@@ -5,18 +5,29 @@ public class PlayerSpawnPoint : Prerequisite
 {
 	public void OnEnable()
 	{
-		RegisterSatisfied (Register);
+		if (IsSatisfied)
+		{
+			Register (true);
+		}
+		RegisterSatisfiedChange (Register);
 	}
 
 	public void OnDisable()
 	{
-		UnregisterSatisfied (Register);
+		UnregisterSatisfiedChange (Register);
 	}
 
 
-	private void Register ()
+	private void Register ( bool satisfied )
 	{
-		GameController.Instance ().RegisterPlayerSpawnPoint (this);
+		if (satisfied)
+		{
+			GameController.Instance ().RegisterPlayerSpawnPoint (this);
+		}
+		else
+		{
+			GameController.Instance ().UnregisterPlayerSpawnPoint (this);
+		}
 	}
 }
 

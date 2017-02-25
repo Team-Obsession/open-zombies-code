@@ -55,7 +55,7 @@ public class WallWeapon : Interactable
 		int cost = hasWeapon ? ammoCost : weaponCost;
 
 		//Stop execution if the player has insufficient points or if this Interactable hasn't been satisfied
-		if (candidate.Points < cost || !PrerequisitesSatisfied ())
+		if (candidate.Points < cost || !IsSatisfied)
 		{
 			return false;
 		}
@@ -63,7 +63,7 @@ public class WallWeapon : Interactable
 		//If this point is reached, then the transaction can and should take place.
 
 		//Satisfy this Interactable and take points from the player
-		IsSatisfied = true;
+		SelfSatisfied = true;
 		candidate.Points -= hasWeapon ? ammoCost : weaponCost;
 
 		pWeapHandler.PickupWeapon (gun);

@@ -3,16 +3,12 @@ using System.Collections;
 
 public class ZombieDeath : MonoBehaviour
 {
-	public Zombie zombie; //this zombie
+
+	private Zombie zombie; //this zombie
 
 	void OnDie (Actor actor)
 	{
 		Destroy(this.gameObject);
-	}
-
-	void Test()
-	{
-		Debug.Log("Zombie health change");
 	}
 
 	void Start()

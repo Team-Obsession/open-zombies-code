@@ -50,10 +50,10 @@ public class MysteryBox : Interactable
 			OnPickedUp ();
 			return true;
 		}
-		else if (state == false && candidate.Points >= cost && PrerequisitesSatisfied())
+		else if (state == false && candidate.Points >= cost && IsSatisfied)
 		{ //Weapon is not spawned and should be
 			state = true;
-			IsSatisfied = true;
+			SelfSatisfied = true;
 			candidate.Points -= cost;
 			mysteryWeapon = potentialWeapons.GetRandomElement<Weapon>();
 			weaponOwner = candidate;

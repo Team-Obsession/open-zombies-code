@@ -18,9 +18,9 @@ public class Door : Interactable
 	public override bool Interact (Player candidate, float timeHeld)
 	{
 		if (timeHeld != 0f) {	return false;	}
-		if (state || candidate.Points < cost || !PrerequisitesSatisfied()) {	return false;	}
+		if (state || candidate.Points < cost || !IsSatisfied) {	return false;	}
 		state = true;
-		IsSatisfied = true;
+		SelfSatisfied = true;
 		candidate.Points -= cost;
 		OnInteract (candidate);
 		OnInteractableUpdate ();
