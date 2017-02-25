@@ -1,6 +1,0 @@
-Sample Weapon List (Just placeholder stats, obviously they're off)
-Name,Class,Subclass,Ammo,Firerate,Weight,ReloadTime
-
-LSAT,Gun,LMG,100,60,25,4
-Ray Gun,Gun,Pistol,20,35,5,2.5
-M1911,Gun,Pistol,8,40,3,2

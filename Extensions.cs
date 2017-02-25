@@ -10,7 +10,7 @@ public static class Extensions
 		return array[UnityEngine.Random.Range (0, array.Length)];
 	}
 
-	public static T GetRandomElement<T> ( this List<T> list )
+	public static T GetRandomElement<T> (this List<T> list )
 	{
 		if (list.Count == 0)	{	return default (T);	}
 		int rand = UnityEngine.Random.Range (0, list.Count);
@@ -27,7 +27,7 @@ public static class Extensions
 		Transform closest = prospects[0];
 		float lastSqrDist = float.MaxValue;
 		float thisSqrDist;
-		for(int i = 0; i < prospects.Count; i++)
+		for (int i = 0; i < prospects.Count; i++)
 		{
 			thisSqrDist =  (prospects[i].position - reference.position).sqrMagnitude;
 			if(thisSqrDist < lastSqrDist)

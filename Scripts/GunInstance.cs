@@ -19,7 +19,7 @@ public class GunInstance : WeaponInstance
 
 	private int magazineSize, bulletsInMag, extraAmmo;
 	private float currentAccuracy = 0f;
-	private bool reloading = false, cocking = false;
+	private bool reloading = false;// cocking = false;
 
 
 	public int BulletsInMag

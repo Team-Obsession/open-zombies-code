@@ -118,7 +118,7 @@ public class PlayerWeaponHandler : PlayerRelatedScript
 	protected override void OnInitialize()
 	{
 		player = GetComponent<LocalPlayer>();
-		if(input == null && ((input = player.GetComponent<PlayerInput>()) == null))
+		if (input == null && ((input = player.GetComponent<PlayerInput>()) == null))
 		{
 			Debug.LogError (gameObject.name + " couldn't find an input from its player");
 		}
